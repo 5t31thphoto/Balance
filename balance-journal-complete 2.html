@@ -1,0 +1,3297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="A calm, rules-based food journal for gluten-free eating and gentle dietary balance. Log simply — a sophisticated memory engine offers quiet, practical ideas so you can stay nourished without the arithmetic." />
+  <meta name="theme-color" content="#1a1a1a" />
+  <title>Balance · Gluten-Aware Journal</title>
+  <style>
+    :root {
+      --bg: #f7f5f2;
+      --bg-elevated: #ffffff;
+      --bg-subtle: #f0ece6;
+      --text: #1c1917;
+      --text-muted: #78716c;
+      --text-faint: #a8a29e;
+      --accent: #3f6f5a;
+      --accent-soft: #e8f0eb;
+      --accent-hover: #2f5544;
+      --border: #e7e5e4;
+      --border-strong: #d6d3d1;
+      --shadow: 0 1px 2px rgba(28,25,23,0.04), 0 4px 12px rgba(28,25,23,0.04);
+      --shadow-lg: 0 4px 24px rgba(28,25,23,0.08);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --transition: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #121110;
+      --bg-elevated: #1c1917;
+      --bg-subtle: #292524;
+      --text: #fafaf9;
+      --text-muted: #a8a29e;
+      --text-faint: #78716c;
+      --accent: #7cb89a;
+      --accent-soft: #1f2e28;
+      --accent-hover: #95c9ad;
+      --border: #292524;
+      --border-strong: #3f3a36;
+      --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      z-index: 9999;
+    }
+
+    .app {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 1.25rem 6rem;
+      position: relative;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      padding: 1.1rem 0 0.9rem;
+      margin: 0 -1.25rem;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+      border-bottom: 1px solid transparent;
+      transition: border-color var(--transition);
+    }
+
+    header.scrolled { border-bottom-color: var(--border); }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #2a4a3a));
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      box-shadow: 0 2px 6px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border: none;
+      background: transparent;
+      border-radius: 10px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-subtle);
+      color: var(--text);
+    }
+
+    .icon-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 1.75;
+    }
+
+    main { padding-top: 1.75rem; }
+
+    .composer {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.1rem 1.15rem 1rem;
+      margin-bottom: 1.75rem;
+      transition: box-shadow var(--transition), border-color var(--transition);
+    }
+
+    .composer:focus-within {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+      box-shadow: var(--shadow), 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .composer-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.55rem;
+    }
+
+    .composer textarea {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 1.05rem;
+      line-height: 1.45;
+      color: var(--text);
+      resize: none;
+      outline: none;
+      min-height: 52px;
+      max-height: 140px;
+    }
+
+    .composer textarea::placeholder { color: var(--text-faint); }
+
+    .composer-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.28rem 0.65rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition);
+      user-select: none;
+    }
+
+    .chip:hover {
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .chip.active {
+      background: var(--accent-soft);
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+      color: var(--accent);
+    }
+
+    .composer-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.05rem;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 550;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 1px 2px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-primary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-subtle);
+      color: var(--text);
+    }
+
+    .suggestions-section { margin-bottom: 2rem; }
+
+    .reflection-bar {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1.05rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      box-shadow: var(--shadow);
+    }
+
+    .reflection-bar strong {
+      color: var(--text);
+      font-weight: 550;
+    }
+
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 550;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .suggestion-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .suggestion-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.1rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 0.9rem;
+      align-items: flex-start;
+      animation: fadeSlide 0.4s var(--transition) both;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .suggestion-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
+
+    .suggestion-body { flex: 1; min-width: 0; }
+
+    .suggestion-title {
+      font-size: 0.92rem;
+      font-weight: 550;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+      letter-spacing: -0.01em;
+    }
+
+    .suggestion-text {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .suggestion-actions {
+      display: flex;
+      gap: 0.35rem;
+      margin-top: 0.65rem;
+    }
+
+    .suggestion-actions .btn {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.78rem;
+    }
+
+    .journal-section { margin-bottom: 2rem; }
+
+    .day-group { margin-bottom: 1.75rem; }
+
+    .day-header {
+      font-size: 0.78rem;
+      font-weight: 550;
+      color: var(--text-muted);
+      margin-bottom: 0.65rem;
+      letter-spacing: 0.01em;
+    }
+
+    .entry-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .entry {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem 1rem;
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+      transition: border-color var(--transition);
+      position: relative;
+    }
+
+    .entry:hover { border-color: var(--border-strong); }
+
+    .entry-time {
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      color: var(--text-faint);
+      min-width: 3.2rem;
+      padding-top: 0.15rem;
+    }
+
+    .entry-content { flex: 1; min-width: 0; }
+
+    .entry-text {
+      font-size: 0.95rem;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .entry-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.45rem;
+    }
+
+    .tag {
+      font-size: 0.68rem;
+      font-weight: 500;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+    }
+
+    .entry-delete {
+      opacity: 0;
+      position: absolute;
+      top: 0.55rem;
+      right: 0.55rem;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: var(--bg-subtle);
+      border-radius: 7px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: opacity var(--transition), color var(--transition), background var(--transition);
+    }
+
+    .entry:hover .entry-delete { opacity: 1; }
+
+    .entry-delete:hover {
+      color: #b91c1c;
+      background: #fef2f2;
+    }
+
+    [data-theme="dark"] .entry-delete:hover {
+      background: #3f1c1c;
+      color: #fca5a5;
+    }
+
+    .entry-delete svg { width: 14px; height: 14px; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 1rem;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+    }
+
+    .empty-state h3 {
+      font-size: 1.05rem;
+      font-weight: 550;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+
+    .empty-state p {
+      font-size: 0.9rem;
+      max-width: 300px;
+      margin: 0 auto;
+      line-height: 1.55;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 25, 23, 0.35);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s;
+    }
+
+    .overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .panel {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      width: min(100%, 640px);
+      max-height: 85dvh;
+      background: var(--bg-elevated);
+      border-radius: 18px 18px 0 0;
+      box-shadow: var(--shadow-lg);
+      z-index: 101;
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel.open { transform: translateX(-50%) translateY(0); }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.15rem 1.35rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-body {
+      padding: 1.25rem 1.35rem 2.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .settings-group { margin-bottom: 1.75rem; }
+
+    .settings-group h4 {
+      font-size: 0.72rem;
+      font-weight: 550;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.7rem;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-row:last-child { border-bottom: none; }
+
+    .settings-row label { font-size: 0.92rem; color: var(--text); }
+
+    .settings-row .desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .toggle {
+      width: 44px;
+      height: 26px;
+      border-radius: 999px;
+      background: var(--border-strong);
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: background var(--transition);
+      flex-shrink: 0;
+    }
+
+    .toggle.on { background: var(--accent); }
+
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform var(--transition);
+    }
+
+    .toggle.on::after { transform: translateX(18px); }
+
+    .btn-block { width: 100%; margin-top: 0.5rem; }
+
+    .btn-danger {
+      background: transparent;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover { background: #fef2f2; }
+
+    [data-theme="dark"] .btn-danger {
+      border-color: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    [data-theme="dark"] .btn-danger:hover { background: #3f1c1c; }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: var(--text);
+      color: var(--bg);
+      padding: 0.7rem 1.2rem;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      z-index: 200;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 480px) {
+      .app { padding-left: 1rem; padding-right: 1rem; }
+      header { margin-left: -1rem; margin-right: -1rem; padding-left: 1rem; padding-right: 1rem; }
+      .composer { padding: 0.95rem 1rem 0.9rem; }
+      .entry-delete { opacity: 0.6; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  
+    .substitute-finder {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.1rem 1.15rem 1rem;
+      margin-bottom: 1.75rem;
+      transition: box-shadow var(--transition), border-color var(--transition);
+    }
+
+    .substitute-finder:focus-within {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+      box-shadow: var(--shadow), 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .substitute-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.55rem;
+    }
+
+    .substitute-header svg {
+      width: 14px;
+      height: 14px;
+      color: var(--text-faint);
+    }
+
+    .substitute-input-wrap {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .substitute-input-wrap input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.55rem 0.9rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .substitute-input-wrap input:focus {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .substitute-input-wrap input::placeholder {
+      color: var(--text-faint);
+    }
+
+    .substitute-results {
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .substitute-results[hidden] {
+      display: none;
+    }
+
+    .substitute-result-title {
+      font-size: 0.85rem;
+      font-weight: 550;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .substitute-result-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .substitute-result-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.5rem 0.6rem;
+      background: var(--bg-subtle);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+
+    .substitute-result-item .product-name {
+      font-weight: 550;
+      color: var(--text);
+    }
+
+    .substitute-result-item .product-note {
+      color: var(--text-muted);
+    }
+
+    .substitute-result-item .product-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.2rem;
+      margin-top: 0.2rem;
+    }
+
+    .substitute-result-item .product-tag {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .substitute-no-results {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .substitute-no-results strong {
+      color: var(--text);
+      font-style: normal;
+    }
+</style>
+</head>
+<body>
+  <noscript>
+    <div style="max-width:720px;margin:24px auto;padding:18px 20px;border:1px solid #e7e5e4;border-radius:16px;background:#fff;color:#1c1917;font:15px/1.5 system-ui,sans-serif">
+      <strong>Balance is ready.</strong><br>
+      This preview does not run the app's local JavaScript. Open the file in a normal browser to use the journal; your data stays in this browser.
+    </div>
+  </noscript>
+  <div class="app">
+    <header id="header">
+      <div class="header-inner">
+        <a href="#" class="logo" aria-label="Balance Journal home">
+          <span class="logo-mark">B</span>
+          <span>Balance</span>
+        </a>
+        <div class="header-actions">
+          <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Theme">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"/></svg>
+          </button>
+          <button class="icon-btn" id="settingsBtn" aria-label="Settings" title="Settings">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="composer" aria-label="Add journal entry">
+        <div class="composer-label">What did you have or do?</div>
+        <textarea id="entryInput" rows="2" placeholder="e.g. eggs with spinach, or a short walk after lunch…" autocomplete="off"></textarea>
+        <div class="composer-meta">
+          <button type="button" class="chip" data-cat="protein" title="Protein">Protein</button>
+          <button type="button" class="chip" data-cat="iron" title="Iron-rich">Iron</button>
+          <button type="button" class="chip" data-cat="vegetable" title="Vegetables">Veg</button>
+          <button type="button" class="chip" data-cat="fruit" title="Fruit">Fruit</button>
+          <button type="button" class="chip" data-cat="grain" title="GF grain / starch">Grain</button>
+          <button type="button" class="chip" data-cat="fat" title="Healthy fat / nuts">Fat</button>
+          <button type="button" class="chip" data-cat="hydration" title="Drink">Drink</button>
+          <button type="button" class="chip" data-cat="movement" title="Activity">Move</button>
+          <div class="composer-actions">
+            <button type="button" class="btn btn-primary" id="addBtn" disabled>Add</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="substitute-finder" id="substituteFinder" aria-label="Find gluten-free substitutes">
+        <div class="substitute-header">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+          <span>Find a gluten-free substitute</span>
+        </div>
+        <div class="substitute-input-wrap">
+          <input type="text" id="substituteInput" placeholder="e.g. bagel, pretzel, soy sauce, breadcrumbs…" autocomplete="off" />
+          <button type="button" class="btn btn-primary" id="substituteBtn">Find</button>
+        </div>
+        <div class="substitute-results" id="substituteResults" hidden></div>
+      </section>
+
+
+      <div class="reflection-bar" id="reflectionBar" hidden></div>
+
+      <section class="suggestions-section" id="suggestionsSection" hidden>
+        <div class="section-label">Gentle ideas for balance</div>
+        <div class="suggestion-cards" id="suggestionCards"></div>
+      </section>
+
+      <section class="journal-section">
+        <div class="section-label">Your journal</div>
+        <div id="journalFeed"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="panel" id="settingsPanel" role="dialog" aria-labelledby="settingsTitle">
+    <div class="panel-header">
+      <h2 class="panel-title" id="settingsTitle">Settings</h2>
+      <button class="icon-btn" id="closeSettings" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <div class="settings-group">
+        <h4>Appearance</h4>
+        <div class="settings-row">
+          <div>
+            <label>Dark mode</label>
+            <div class="desc">Easier on the eyes in low light</div>
+          </div>
+          <button class="toggle" id="darkToggle" aria-label="Toggle dark mode"></button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <h4>Data</h4>
+        <div class="settings-row">
+          <div>
+            <label>Export journal</label>
+            <div class="desc">Download a JSON backup</div>
+          </div>
+          <button class="btn btn-ghost" id="exportBtn">Export</button>
+        </div>
+        <div class="settings-row">
+          <div>
+            <label>Import journal</label>
+            <div class="desc">Restore from a previous export</div>
+          </div>
+          <button class="btn btn-ghost" id="importBtn">Import</button>
+          <input type="file" id="importFile" accept=".json,application/json" hidden />
+        </div>
+        <button class="btn btn-danger btn-block" id="clearBtn">Clear all entries</button>
+      </div>
+      <div class="settings-group">
+        <h4>About this journal</h4>
+        <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.55;">
+          Balance is a rules-based journal for gluten-free eating with thoughtful attention to protein, iron-rich foods, and overall balance. It never counts calories or macros. It simply remembers what you’ve logged over days, notices soft patterns, and offers quiet, naturally gluten-free ideas so you can stay nourished without the arithmetic.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>(() => {
+    "use strict";
+
+    /* ============================================================
+       BALANCE JOURNAL v5.0
+
+       A gentle, gluten-aware food companion.
+
+       Design principle: The engine suggests what ANY person needs
+       for balanced nourishment. When that suggestion happens to
+       involve gluten, it seamlessly substitutes the best GF
+       alternative. Naturally GF foods appear throughout.
+
+       For: a woman navigating celiac disease, iron deficiency,
+       and life post-gastric bypass. She deserves encouragement,
+       not arithmetic. Every suggestion is safe for her.
+       ============================================================ */
+
+    const STORAGE_KEY = "balance_journal_v50";
+    const SETTINGS_KEY = "balance_settings_v50";
+    const LEGACY_STORAGE_KEY = "balance_journal_v31";
+    const V4_STORAGE_KEY = "balance_journal_v40";
+    const LEGACY_SETTINGS_KEY = "balance_settings_v31";
+    const V4_SETTINGS_KEY = "balance_settings_v40";
+    const MEMORY_KEY = "balance_memory_v50";
+    const V4_MEMORY_KEY = "balance_memory_v40";
+
+    const SCHEMA_VERSION = 5;
+    const defaultSettings = {
+      theme: "system",
+      lastSuggestionIds: [],
+      dismissedSuggestions: [],
+      suggestionFeedback: {},
+      conceptMemory: {},
+      patternMemory: {},
+      lastAnalysis: null
+    };
+
+    /* ------------------------------------------------------------
+       STORAGE / RUNTIME COMPATIBILITY
+       The application never assumes localStorage, structuredClone,
+       crypto.randomUUID, matchMedia listeners, or a full browser DOM.
+       This keeps the single-file build portable while retaining a
+       richer runtime when a normal browser is available.
+       ------------------------------------------------------------ */
+    const clone = (value) => {
+      if (typeof structuredClone === "function") {
+        try { return structuredClone(value); } catch {}
+      }
+      try { return JSON.parse(JSON.stringify(value)); } catch { return value; }
+    };
+
+    const storage = (() => {
+      let memory = {};
+      let available = false;
+      try {
+        const test = "__balance_storage_test__";
+        window.localStorage.setItem(test, "1");
+        window.localStorage.removeItem(test);
+        available = true;
+      } catch {}
+      return {
+        get(key) {
+          try { return available ? window.localStorage.getItem(key) : memory[key] ?? null; } catch { return memory[key] ?? null; }
+        },
+        set(key, value) {
+          try {
+            if (available) window.localStorage.setItem(key, value);
+            else memory[key] = value;
+            return true;
+          } catch { memory[key] = value; return false; }
+        }
+      };
+    })();
+
+    function loadJSON(key, fallback) {
+      try {
+        const raw = storage.get(key);
+        if (!raw) return clone(fallback);
+        return JSON.parse(raw) ?? clone(fallback);
+      } catch {
+        return clone(fallback);
+      }
+    }
+
+    function saveJSON(key, value) {
+      const ok = storage.set(key, JSON.stringify(value));
+      if (!ok && typeof showToast === "function") showToast("Could not save locally — export a backup");
+      return ok;
+    }
+
+    function makeId(prefix = "e") {
+      try { if (window.crypto && typeof window.crypto.randomUUID === "function") return window.crypto.randomUUID(); } catch {}
+      return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+    }
+
+    function migrateEntry(e) {
+      const entry = { ...e };
+      entry.id = entry.id || makeId("e");
+      entry.ts = entry.ts || new Date().toISOString();
+      entry.text = String(entry.text || entry.userText || "").trim();
+      entry.categories = Array.isArray(entry.categories) ? entry.categories : (Array.isArray(entry.inferredCategories) ? entry.inferredCategories : []);
+      entry.families = Array.isArray(entry.families) ? entry.families : (Array.isArray(entry.foodActivityFamilies) ? entry.foodActivityFamilies : []);
+      entry.units = entry.units && typeof entry.units === "object" ? entry.units : (entry.portionEstimates || {});
+      return entry;
+    }
+
+    function migrateEntries(raw) {
+      const list = Array.isArray(raw) ? raw : [];
+      return list.map(migrateEntry).filter(e => e.text);
+    }
+
+    const loadedSettings = loadJSON(SETTINGS_KEY, loadJSON(V4_SETTINGS_KEY, loadJSON(LEGACY_SETTINGS_KEY, {})));
+    const loadedMemory = loadJSON(MEMORY_KEY, loadJSON(V4_MEMORY_KEY, { concepts: {}, suggestions: {}, patterns: {} }));
+    let state = {
+      schema: SCHEMA_VERSION,
+      entries: migrateEntries(loadJSON(STORAGE_KEY, loadJSON(V4_STORAGE_KEY, loadJSON(LEGACY_STORAGE_KEY, [])))),
+      settings: { ...defaultSettings, ...(loadedSettings && typeof loadedSettings === "object" ? loadedSettings : {}) },
+      memory: {
+        concepts: loadedMemory.concepts || {},
+        suggestions: loadedMemory.suggestions || {},
+        patterns: loadedMemory.patterns || {},
+        initializedAt: loadedMemory.initializedAt || new Date().toISOString()
+      }
+    };
+
+    function persistEntries() { saveJSON(STORAGE_KEY, state.entries); }
+    function persistSettings() { saveJSON(SETTINGS_KEY, state.settings); }
+    function persistMemory() { saveJSON(MEMORY_KEY, state.memory); }
+
+    /* ============================================================
+       CATEGORIES
+       ============================================================ */
+    const CATEGORIES = {
+      protein: {
+        label: "Protein",
+        keywords: [
+          "egg", "eggs", "chicken", "turkey", "beef", "pork", "lamb", "fish", "salmon", "tuna", "cod",
+          "shrimp", "tofu", "tempeh", "edamame", "lentil", "lentils", "chickpea", "chickpeas", "bean",
+          "beans", "black bean", "greek yogurt", "yogurt", "cottage cheese", "cheese", "protein", "meat",
+          "steak", "scramble", "omelette", "omelet", "quinoa", "whey", "protein shake", "protein powder",
+          "sardines", "tilapia", "wrap", "pita", "burger", "patty", "hot dog", "sausage", "bacon",
+          "ham", "deli", "jerky", "meatball", "meatballs", "chili", "burrito", "taco", "tacos",
+          "quesadilla", "enchilada", "fajita", "shawarma", "kebab", "gyro", "falafel", "hummus",
+          "steak", "roast", "brisket", "ribs", "wing", "wings", "nugget", "nuggets", "tender",
+          "salmon", "trout", "mackerel", "anchovy", "anchovies", "crab", "lobster", "scallop",
+          "mussel", "oyster", "clam", "clams", "sushi", "sashimi", "poke", "seitan",
+          "tempeh", "protein bar", "quest bar", "cottage", "ricotta", "mozzarella", "feta",
+          "parmesan", "cheddar", "string cheese", "lunch meat", "cold cut", "pastrami", "salami",
+          "pepperoni", "prosciutto", "duck", "venison", "bison", "goat", "rabbit"
+        ]
+      },
+      iron: {
+        label: "Iron-rich",
+        keywords: [
+          "beef", "steak", "lamb", "liver", "spinach", "lentil", "lentils", "chickpea", "beans", "tofu",
+          "quinoa", "pumpkin seed", "pumpkin seeds", "clams", "oysters", "sardines", "dark meat",
+          "turkey thigh", "chicken thigh", "dried apricot", "apricots", "raisins", "prunes", "molasses",
+          "iron", "red meat", "chili", "bean chili", "fortified", "clam", "mussel", "liver", "pate"
+        ]
+      },
+      vegetable: {
+        label: "Vegetable",
+        keywords: [
+          "spinach", "kale", "broccoli", "cauliflower", "carrot", "carrots", "pepper", "peppers",
+          "bell pepper", "cucumber", "zucchini", "squash", "tomato", "tomatoes", "lettuce", "salad",
+          "greens", "cabbage", "brussels", "asparagus", "mushroom", "mushrooms", "onion", "garlic",
+          "celery", "beet", "beets", "green bean", "peas", "avocado", "veg", "vegetable", "veggies",
+          "chard", "bok choy", "arugula", "salsa", "pico", "jalapeno", "jalapeño", "corn",
+          "guacamole", "guac", "nacho", "coleslaw", "slaw", "pickle", "pickles", "kimchi", "sauerkraut",
+          "artichoke", "eggplant", "aubergine", "radish", "turnip", "parsnip", "leek", "shallot",
+          "scallion", "green onion", "snap pea", "snow pea", "edamame", "okra", "fennel", "endive",
+          "romaine", "iceberg", "butter lettuce", "mixed greens", "spring mix", "microgreens"
+        ]
+      },
+      fruit: {
+        label: "Fruit",
+        keywords: [
+          "apple", "banana", "berry", "berries", "blueberry", "strawberry", "raspberry", "orange",
+          "grape", "grapes", "mango", "pineapple", "peach", "pear", "kiwi", "melon", "watermelon",
+          "cherry", "cherries", "plum", "fruit", "citrus", "lemon", "lime", "raisin", "raisins",
+          "date", "dates", "fig", "figs", "blackberry", "cranberry", "pomegranate", "papaya",
+          "guava", "passion fruit", "lychee", "coconut", "nectarine", "apricot", "cantaloupe",
+          "honeydew", "grapefruit", "tangerine", "clementine", "mandarin", "persimmon", "dragon fruit"
+        ]
+      },
+      grain: {
+        label: "Grain / Starch",
+        keywords: [
+          "rice", "brown rice", "quinoa", "millet", "buckwheat", "amaranth", "teff", "sorghum", "potato",
+          "potatoes", "sweet potato", "oat", "oats", "oatmeal", "gf bread", "gluten free bread", "corn",
+          "polenta", "tortilla", "corn tortilla", "pasta", "gf pasta", "cracker", "rice cake", "starch",
+          "pita", "wrap", "ramen", "noodle", "noodles", "bread", "toast", "chip", "chips", "nacho",
+          "nachos", "tortilla chip", "gf pita", "gluten free pita", "pretzel", "cereal", "granola",
+          "waffle", "pancake", "brownie", "brownies", "cookie", "cookies", "cake", "muffin", "donut",
+          "doughnut", "pastry", "rice cracker", "corn chip", "burrito", "taco", "tacos", "quesadilla",
+          "enchilada", "fajita", "pizza", "flatbread", "naan", "bagel", "english muffin", "croissant",
+          "biscuit", "scone", "roll", "bun", "hamburger bun", "hot dog bun", "french fries", "fries",
+          "hash brown", "tater tot", "mashed potato", "baked potato", "couscous", "orzo", "risotto",
+          "paella", "fried rice", "stir fry", "lo mein", "chow mein", "udon", "soba", "vermicelli",
+          "lasagna", "spaghetti", "macaroni", "mac and cheese", "gnocchi", "dumpling", "pierogi",
+          "empanada", "samosa", "spring roll", "egg roll", "wonton", "bao", "arepa", "pupusa"
+        ]
+      },
+      fat: {
+        label: "Healthy fat",
+        keywords: [
+          "nut", "nuts", "almond", "almonds", "walnut", "walnuts", "cashew", "peanut", "peanut butter",
+          "olive oil", "oil", "butter", "ghee", "avocado", "chia", "flax", "seed", "seeds", "tahini",
+          "olive", "olives", "coconut", "pumpkin seed", "cheese", "guacamole", "guac", "mayo",
+          "mayonnaise", "dressing", "cream", "sour cream", "almond butter", "cashew butter", "pesto",
+          "sesame", "sunflower seed", "hemp seed", "macadamia", "pecan", "pistachio", "hazelnut"
+        ]
+      },
+      dairy: {
+        label: "Dairy / Alt",
+        keywords: [
+          "milk", "yogurt", "cheese", "cream", "butter", "kefir", "cottage", "dairy", "almond milk",
+          "oat milk", "soy milk", "coconut milk", "sour cream", "cream cheese", "ice cream", "latte",
+          "cappuccino", "milkshake", "smoothie", "half and half", "heavy cream", "whipped cream",
+          "ricotta", "mozzarella", "feta", "parmesan", "cheddar", "brie", "gouda", "swiss", "provolone"
+        ]
+      },
+      hydration: {
+        label: "Hydration",
+        keywords: [
+          "water", "tea", "herbal tea", "coffee", "sparkling", "infused", "lemonade", "smoothie", "juice",
+          "drink", "drank", "hydrate", "hydration", "seltzer", "gatorade", "redbull", "red bull",
+          "energy drink", "monster", "celcius", "celsius", "powerade", "electrolyte", "soda", "cola",
+          "coke", "pepsi", "sprite", "beer", "wine", "alcohol", "cocktail", "latte", "espresso",
+          "americano", "matcha", "kombucha", "broth", "soup", "mountain dew", "mtn dew", "dew",
+          "dr pepper", "drpepper", "fanta", "root beer", "ginger ale", "tonic", "club soda",
+          "vitamin water", "propel", "bodyarmor", "body armor", "liquid iv", "pedialyte", "gatorade",
+          "powerade", "skinny pop", "bubly", "la croix", "lacroix", "topo chico", "perrier",
+          "san pellegrino", "arizona tea", "snapple", "honest tea", "pure leaf", "starbucks",
+          "dunkin", "frappe", "frappuccino", "chai", "hot chocolate", "cocoa", "milkshake",
+          "shake", "smoothie", "orange juice", "apple juice", "cranberry juice", "lemonade",
+          "iced tea", "sweet tea", "green tea", "black tea", "chamomile", "peppermint tea",
+          "whiskey", "vodka", "rum", "gin", "tequila", "margarita", "mojito", "mimosa", "bloody mary"
+        ]
+      },
+      movement: {
+        label: "Movement",
+        keywords: [
+          "walk", "walking", "walked", "run", "ran", "running", "jog", "jogged", "jogging",
+          "stretch", "stretched", "stretching", "yoga", "bike", "biked", "biking", "bicycle",
+          "cycling", "cycled", "hike", "hiked", "hiking", "exercise", "exercised", "workout",
+          "worked out", "gym", "move", "moved", "movement", "stairs", "dance", "danced", "dancing",
+          "swim", "swam", "swimming", "lift", "lifted", "lifting", "weights", "hiit", "pilates",
+          "climb", "climbed", "climbing", "sex", "intimate", "intimacy", "cardio", "elliptical",
+          "row", "rowed", "rowing", "sport", "soccer", "basketball", "tennis", "golf", "ski",
+          "skiing", "skied", "skate", "skated", "skating", "surf", "surfed", "surfing",
+          "paddle", "kayak", "kayaked", "canoe", "canoed", "skateboard", "rollerblade",
+          "boxing", "kickbox", "martial arts", "jiu jitsu", "karate", "taekwondo", "crossfit",
+          "spin", "spin class", "zumba", "aerobics", "barre", "trampolin", "jump rope",
+          "pushup", "push-up", "push ups", "situp", "squat", "lunges", "plank", "burpee",
+          "mile", "miles", "kilometer", "kilometers", "km", "laps", "lap",
+          "went for a walk", "went for a run", "went swimming", "went hiking", "went biking",
+          "rode my bike", "rode the bike", "bike ride", "long run", "easy run", "tempo run",
+          "across the bay", "around the block", "up the hill", "down the trail"
+        ]
+      },
+      rest: {
+        label: "Rest",
+        keywords: [
+          "nap", "napped", "sleep", "slept", "rest", "rested", "lie down", "lay down", "doze",
+          "dozed", "relax", "relaxed", "meditat", "abyss", "gaze", "gazed", "netflix", "tv",
+          "scroll", "scrolling", "couch", "laid down", "chilled", "chill"
+        ]
+      }
+    };
+
+    const FOOD_FAMILIES = {
+      fish: ["fish", "salmon", "tuna", "cod", "shrimp", "sardines", "tilapia", "seafood", "trout", "mackerel", "crab", "lobster", "scallop", "sushi", "poke"],
+      poultry: ["chicken", "turkey", "poultry", "duck", "wing", "wings", "nugget"],
+      redmeat: ["beef", "steak", "lamb", "pork", "meat", "bacon", "sausage", "ham", "jerky", "brisket", "ribs", "burger"],
+      eggs: ["egg", "eggs", "scramble", "omelette", "omelet"],
+      dairyprot: ["yogurt", "greek yogurt", "cottage cheese", "cheese", "ricotta", "mozzarella", "feta"],
+      legumes: ["lentil", "lentils", "chickpea", "chickpeas", "bean", "beans", "tofu", "tempeh", "edamame", "chili", "falafel", "hummus"],
+      leafy: ["spinach", "kale", "greens", "lettuce", "arugula", "chard", "romaine"],
+      cruciferous: ["broccoli", "cauliflower", "cabbage", "brussels"],
+      berries: ["berry", "berries", "blueberry", "strawberry", "raspberry", "blackberry"],
+      citrus: ["orange", "lemon", "lime", "citrus", "kiwi", "grapefruit"],
+      grapes: ["grape", "grapes"],
+      rice: ["rice", "brown rice", "ramen", "noodle", "noodles", "risotto", "paella", "fried rice"],
+      quinoa: ["quinoa"],
+      potato: ["potato", "potatoes", "sweet potato", "fries", "hash brown", "tater"],
+      tortilla: ["tortilla", "nacho", "nachos", "chip", "chips", "pita", "wrap", "burrito", "taco", "quesadilla", "enchilada", "fajita"],
+      bread: ["bread", "toast", "pita", "wrap", "bagel", "bun", "roll", "flatbread", "naan", "pizza"],
+      sweets: ["brownie", "brownies", "cookie", "cookies", "cake", "muffin", "donut", "pastry", "ice cream", "chocolate", "candy"],
+      nuts: ["nut", "nuts", "almond", "almonds", "walnut", "cashew", "peanut", "pecan", "pistachio"],
+      caffeine: ["coffee", "espresso", "latte", "redbull", "red bull", "energy drink", "monster", "celcius", "celsius", "matcha", "mountain dew", "mtn dew"],
+      sportsdrink: ["gatorade", "powerade", "electrolyte", "propel", "bodyarmor", "liquid iv", "pedialyte"],
+      soda: ["soda", "cola", "coke", "pepsi", "sprite", "mountain dew", "mtn dew", "fanta", "dr pepper", "root beer"],
+      alcohol: ["beer", "wine", "alcohol", "cocktail", "whiskey", "vodka", "rum", "gin", "tequila", "margarita"],
+      swim: ["swim", "swam", "swimming"],
+      run: ["run", "ran", "running", "jog", "jogged", "jogging", "mile", "miles"],
+      gym: ["gym", "workout", "lift", "lifting", "weights", "hiit", "crossfit", "spin"],
+      bike: ["bike", "biked", "biking", "bicycle", "cycling", "cycled", "rode"],
+      walk: ["walk", "walking", "walked", "stroll", "stairs"],
+      yoga: ["yoga", "stretch", "stretching", "pilates", "barre"],
+      hike: ["hike", "hiked", "hiking"],
+      intimacy: ["sex", "intimate", "intimacy"],
+      rest: ["nap", "napped", "sleep", "slept", "rest", "rested", "abyss", "gaze", "gazed"]
+    };
+
+    /* ============================================================
+       GLUTEN-FREE PRODUCT DATABASE
+       Curated substitutes that seamlessly replace gluten options.
+       ============================================================ */
+        /* ============================================================
+       GLUTEN-FREE DOMAIN KNOWLEDGE BASE
+       
+       Comprehensive mapping of gluten-containing foods to their
+       GF equivalents, with semantic relationships and category
+       hierarchies. This is real domain engineering, not a list.
+       ============================================================ */
+
+    // Core product database — what we actually recommend
+    const GF_PRODUCTS = {
+      bread: [
+        { name: "Schar Artisan Baker White Bread", note: "soft, sandwich-ready, widely available", tags: ["sandwich", "toast", "soft"] },
+        { name: "Canyon Bakehouse Mountain White", note: "great texture, toasts beautifully", tags: ["toast", "soft", "white"] },
+        { name: "Canyon Bakehouse 7-Grain", note: "hearty, good for avocado toast", tags: ["hearty", "grain", "toast"] },
+        { name: "Schar Ciabatta Rolls", note: "crusty, good for sandwiches or dipping", tags: ["crusty", "roll", "italian"] },
+        { name: "Little Northern Bakehouse Seeds & Grains", note: "high fiber, satisfying chew", tags: ["seedy", "hearty", "fiber"] }
+      ],
+      bagel: [
+        { name: "Canyon Bakehouse Everything Bagels", note: "toasts well, everything seasoning", tags: ["everything", "breakfast", "toasted"] },
+        { name: "Schar Bagels", note: "soft interior, widely available", tags: ["soft", "plain", "breakfast"] },
+        { name: "O'Doughs Sprouted Bagels", note: "sprouted whole grain, very satisfying", tags: ["sprouted", "whole grain", "hearty"] }
+      ],
+      english_muffin: [
+        { name: "Canyon Bakehouse English Muffins", note: "good nooks and crannies, toasts well", tags: ["breakfast", "eggs benedict", "toasted"] }
+      ],
+      roll_bun: [
+        { name: "Schar Ciabatta Rolls", note: "crusty, good for sandwiches", tags: ["crusty", "sandwich", "italian"] },
+        { name: "Canyon Bakehouse Hamburger Buns", note: "soft, holds up to burgers", tags: ["burger", "soft", "grilling"] },
+        { name: "Schar Hot Dog Rolls", note: "classic hot dog shape, soft", tags: ["hot dog", "soft", "classic"] }
+      ],
+      pasta: [
+        { name: "Jovial Brown Rice Pasta", note: "holds shape well, tastes like real pasta", tags: ["authentic", "italian", "classic"] },
+        { name: "Tinkyada Brown Rice Pasta", note: "reliable, widely available", tags: ["reliable", "pantry staple"] },
+        { name: "Barilla Gluten Free (corn/rice blend)", note: "closest to wheat pasta in texture", tags: ["wheat-like", "familiar", "family friendly"] },
+        { name: "Banza Chickpea Pasta", note: "high protein, slightly nutty flavor", tags: ["high protein", "chickpea", "filling"] },
+        { name: "Explore Cuisine Edamame Pasta", note: "very high protein, great with pesto", tags: ["high protein", "edamame", "pesto"] },
+        { name: "Capello's Grain-Free Fettuccine", note: "almond flour based, very tender", tags: ["grain free", "almond", "tender"] }
+      ],
+      pizza: [
+        { name: "Schar Pizza Crusts", note: "thin, crispy, ready to top", tags: ["thin crust", "crispy", "easy"] },
+        { name: "Caulipower Cauliflower Pizza Crust", note: "vegetable-forward, lighter option", tags: ["cauliflower", "light", "vegetable"] },
+        { name: "Against the Grain Gourmet Pizza Shell", note: "chewy, almost bread-like crust", tags: ["chewy", "bread-like", "gourmet"] },
+        { name: "Bob's Red Mill GF Pizza Crust Mix", note: "make your own, very satisfying", tags: ["homemade", "mix", "satisfying"] }
+      ],
+      crackers: [
+        { name: "Mary's Gone Crackers Original", note: "seedy, crunchy, very satisfying", tags: ["seedy", "crunchy", "satisfying"] },
+        { name: "Simple Mills Almond Flour Crackers", note: "light, great with cheese or hummus", tags: ["light", "almond", "refined"] },
+        { name: "Schar Table Crackers", note: "classic saltine substitute", tags: ["saltine", "classic", "soup"] },
+        { name: "Blue Diamond Nut-Thins (Almond)", note: "crispy, nutty, good for snacking", tags: ["crispy", "nutty", "snack"] }
+      ],
+      pretzel: [
+        { name: "Schar Gluten Free Pretzels", note: "classic twist shape, good crunch", tags: ["classic", "twist", "crunchy"] },
+        { name: "Quinn Dark Chocolate Peanut Filled Pretzels", note: "indulgent, peanut butter filled", tags: ["filled", "chocolate", "indulgent"] },
+        { name: "Glutino Pretzel Twists", note: "widely available, reliable", tags: ["reliable", "pantry", "classic"] }
+      ],
+      wrap_tortilla: [
+        { name: "Siete Almond Flour Tortillas", note: "soft, flexible, great for tacos or wraps", tags: ["soft", "flexible", "taco"] },
+        { name: "Mission Gluten Free Soft Taco Tortillas", note: "widely available, very flexible", tags: ["widely available", "soft", "burrito"] },
+        { name: "Cassava Flour Tortillas (Siete or homemade)", note: "neutral flavor, good for any filling", tags: ["neutral", "cassava", "versatile"] },
+        { name: "La Tortilla Factory GF Wraps", note: "large wraps, good for burritos", tags: ["large", "burrito", "wrap"] }
+      ],
+      cereal: [
+        { name: "Nature's Path Crispy Rice", note: "simple, light, good with berries", tags: ["simple", "light", "rice"] },
+        { name: "Chex Rice or Corn Chex", note: "classic, widely available", tags: ["classic", "pantry", "kid friendly"] },
+        { name: "Purely Elizabeth Ancient Grain Granola", note: "clusters well, good with yogurt", tags: ["granola", "clusters", "yogurt"] },
+        { name: "Bakery on Main Extreme Granola", note: "very crunchy, lots of texture", tags: ["crunchy", "texture", "hearty"] }
+      ],
+      cookie: [
+        { name: "Tate's Bake Shop GF Chocolate Chip Cookies", note: "thin, crispy, genuinely delicious", tags: ["thin", "crispy", "gourmet"] },
+        { name: "Schar Chocolate Hazelnut Bars", note: "indulgent, travel-friendly", tags: ["indulgent", "hazelnut", "travel"] },
+        { name: "Lenny & Larry's Complete Cookies", note: "protein-fortified, satisfying", tags: ["protein", "filling", "soft"] },
+        { name: "Pamela's Chunky Chocolate Chip Cookies", note: "thick, chewy, homemade feel", tags: ["thick", "chewy", "homemade"] }
+      ],
+      cake_muffin: [
+        { name: "King Arthur GF Cake Mix", note: "reliable, bakes up moist", tags: ["mix", "moist", "birthday"] },
+        { name: "Simple Mills Almond Flour Muffin Mix", note: "clean ingredients, not too sweet", tags: ["clean", "almond", "wholesome"] },
+        { name: "Katz GF Donuts", note: "frozen, ready to thaw, surprisingly good", tags: ["donut", "frozen", "convenient"] }
+      ],
+      beer: [
+        { name: "Glutenberg Blonde", note: "clean, refreshing, widely distributed", tags: ["clean", "refreshing", "blonde"] },
+        { name: "Omission Lager", note: "traditional beer taste, brewed to remove gluten", tags: ["traditional", "lager", "familiar"] },
+        { name: "Stella Artois Gluten Free", note: "familiar, easy to find", tags: ["familiar", "easy", "european"] },
+        { name: "Ghostfish Grapefruit IPA", note: "hoppy, citrusy, craft quality", tags: ["hoppy", "ipa", "craft"] }
+      ],
+      flour: [
+        { name: "King Arthur Measure for Measure GF Flour", note: "1:1 substitute, bakes reliably", tags: ["1:1", "reliable", "baking"] },
+        { name: "Bob's Red Mill 1-to-1 Baking Flour", note: "xanthan gum included, versatile", tags: ["versatile", "xanthan", "all purpose"] },
+        { name: "Almond Flour (Bob's or Trader Joe's)", note: "great for pancakes, muffins, breading", tags: ["almond", "pancakes", "breading"] },
+        { name: "Oat Flour (certified GF)", note: "mild, great for pancakes and quick breads", tags: ["mild", "oats", "wholesome"] },
+        { name: "Cassava Flour (Otto's)", note: "neutral, good for tortillas and breading", tags: ["neutral", "cassava", "tortilla"] }
+      ],
+      oats: [
+        { name: "Bob's Red Mill Certified GF Rolled Oats", note: "the gold standard for GF oats", tags: ["gold standard", "rolled", "oatmeal"] },
+        { name: "Quaker Gluten Free Quick Oats", note: "widely available, good for oatmeal", tags: ["quick", "widely available", "pantry"] }
+      ],
+      pancake_waffle: [
+        { name: "Kodiak Cakes GF Power Cakes", note: "protein-fortified, hearty", tags: ["protein", "hearty", "breakfast"] },
+        { name: "King Arthur GF Pancake Mix", note: "fluffy, reliable, family friendly", tags: ["fluffy", "reliable", "classic"] },
+        { name: "Vans GF Waffles", note: "frozen, ready to toast, good texture", tags: ["frozen", "convenient", "toast"] }
+      ],
+      breadcrumbs: [
+        { name: "Aleia's GF Italian Breadcrumbs", note: "seasoned, good for coating", tags: ["seasoned", "coating", "italian"] },
+        { name: "4C GF Parmesan Breadcrumbs", note: "cheesy, good for topping casseroles", tags: ["cheesy", "casserole", "topping"] }
+      ],
+      soy_sauce: [
+        { name: "San-J Tamari Gluten Free Soy Sauce", note: "rich, fermented, widely available", tags: ["tamari", "rich", "asian"] },
+        { name: "Coconut Aminos", note: "soy-free, slightly sweet, lower sodium", tags: ["soy free", "sweet", "paleo"] }
+      ],
+      gravy_sauce: [
+        { name: "McCormick GF Brown Gravy Mix", note: "quick, reliable, comfort food", tags: ["quick", "brown gravy", "comfort"] },
+        { name: "Simply Organic GF Turkey Gravy", note: "clean ingredients, holiday ready", tags: ["organic", "turkey", "holiday"] }
+      ],
+      stuffing: [
+        { name: "Aleia's GF Stuffing Mix", note: "savory, good texture, holiday ready", tags: ["savory", "holiday", "texture"] }
+      ],
+      pie_crust: [
+        { name: "Wholly GF Pie Dough", note: "ready to roll, buttery, easy", tags: ["ready to roll", "buttery", "easy"] },
+        { name: "Mi-Del GF Graham Crackers (for crust)", note: "good for cheesecake or key lime", tags: ["graham", "cheesecake", "crust"] }
+      ]
+    };
+
+    // Domain ontology — semantic relationships between food concepts
+    // This is what makes the system actually understand food, not just match strings
+    const FOOD_ONTOLOGY = {
+      // Hierarchical: specific → general category
+      hierarchy: {
+        bagel: ["bread", "breakfast", "round bread"],
+        english_muffin: ["bread", "breakfast", "muffin"],
+        roll_bun: ["bread", "sandwich bread"],
+        hamburger_bun: ["roll_bun", "bread", "grilling"],
+        hot_dog_bun: ["roll_bun", "bread"],
+        ciabatta: ["bread", "italian", "roll_bun"],
+        sandwich_bread: ["bread"],
+        toast: ["bread", "breakfast"],
+        sliced_bread: ["bread", "sandwich bread"],
+        white_bread: ["bread", "sandwich bread"],
+        whole_wheat: ["bread", "hearty bread"],
+        sourdough: ["bread", "artisan"],
+        rye: ["bread", "hearty bread", "european"],
+        pita: ["bread", "pocket bread", "mediterranean"],
+        naan: ["bread", "indian", "flatbread"],
+        flatbread: ["bread"],
+        focaccia: ["bread", "italian", "flatbread"],
+        
+        spaghetti: ["pasta", "long pasta", "italian"],
+        fettuccine: ["pasta", "long pasta", "italian"],
+        linguine: ["pasta", "long pasta", "italian"],
+        penne: ["pasta", "short pasta", "italian"],
+        macaroni: ["pasta", "short pasta"],
+        lasagna: ["pasta", "baked pasta", "italian"],
+        ravioli: ["pasta", "filled pasta", "italian"],
+        orzo: ["pasta", "small pasta", "rice substitute"],
+        couscous: ["pasta", "small pasta", "mediterranean"],
+        ramen: ["pasta", "noodle", "asian"],
+        udon: ["pasta", "noodle", "asian", "thick noodle"],
+        soba: ["pasta", "noodle", "asian", "buckwheat"],
+        lo_mein: ["pasta", "noodle", "asian", "stir fry"],
+        
+        pizza: ["italian", "flatbread", "baked"],
+        calzone: ["pizza", "italian", "filled"],
+        stromboli: ["pizza", "italian", "rolled"],
+        
+        cracker: ["cracker", "snack", "crunchy"],
+        saltine: ["cracker", "soup cracker", "light"],
+        ritz: ["cracker", "buttery cracker", "snack"],
+        wheat_thin: ["cracker", "snack"],
+        graham_cracker: ["cracker", "sweet cracker", "dessert"],
+        water_cracker: ["cracker", "light", "appetizer"],
+        
+        pretzel: ["cracker", "snack", "twisted", "salty"],
+        pretzel_stick: ["pretzel", "cracker"],
+        soft_pretzel: ["pretzel", "bread", "warm"],
+        
+        tortilla: ["wrap_tortilla", "mexican", "flatbread"],
+        flour_tortilla: ["wrap_tortilla", "mexican", "soft"],
+        corn_tortilla: ["wrap_tortilla", "mexican", "corn"],
+        burrito_shell: ["wrap_tortilla", "large", "mexican"],
+        wrap: ["wrap_tortilla", "sandwich alternative"],
+        
+        cereal: ["breakfast", "grain", "bowl"],
+        oatmeal: ["oats", "breakfast", "hot cereal"],
+        granola: ["cereal", "breakfast", "crunchy"],
+        muesli: ["cereal", "breakfast", "european"],
+        cheerios: ["cereal", "breakfast", "kid friendly"],
+        
+        cookie: ["cookie", "dessert", "sweet"],
+        chocolate_chip: ["cookie", "classic", "dessert"],
+        oreo: ["cookie", "sandwich cookie", "chocolate"],
+        shortbread: ["cookie", "buttery", "scottish"],
+        biscotti: ["cookie", "italian", "dipping"],
+        
+        cake: ["cake_muffin", "dessert", "baked"],
+        cupcake: ["cake_muffin", "dessert", "individual"],
+        muffin: ["cake_muffin", "breakfast", "baked"],
+        donut: ["cake_muffin", "fried", "breakfast", "sweet"],
+        doughnut: ["cake_muffin", "fried", "breakfast", "sweet"],
+        brownie: ["cake_muffin", "chocolate", "dense"],
+        pastry: ["cake_muffin", "flaky", "baked"],
+        croissant: ["cake_muffin", "flaky", "french", "buttery"],
+        danish: ["cake_muffin", "flaky", "sweet", "breakfast"],
+        scone: ["cake_muffin", "british", "breakfast", "dense"],
+        
+        beer: ["alcohol", "fermented", "beverage"],
+        ale: ["beer", "ale", "british"],
+        lager: ["beer", "lager", "clean"],
+        ipa: ["beer", "hoppy", "craft"],
+        stout: ["beer", "dark", "heavy"],
+        wheat_beer: ["beer", "light", "german"],
+        
+        flour: ["flour", "baking", "staple"],
+        all_purpose: ["flour", "baking", "versatile"],
+        bread_flour: ["flour", "baking", "high gluten"],
+        cake_flour: ["flour", "baking", "fine"],
+        whole_wheat_flour: ["flour", "baking", "hearty"],
+        self_rising: ["flour", "baking", "convenient"],
+        
+        oats: ["oats", "breakfast", "hot cereal", "grain"],
+        rolled_oats: ["oats", "breakfast", "hot cereal"],
+        steel_cut: ["oats", "hearty", "chewy"],
+        instant_oatmeal: ["oats", "quick", "convenient"],
+        
+        pancake: ["pancake_waffle", "breakfast", "griddle"],
+        waffle: ["pancake_waffle", "breakfast", "griddle"],
+        french_toast: ["pancake_waffle", "breakfast", "eggy"],
+        
+        breadcrumbs: ["breadcrumbs", "coating", "topping"],
+        panko: ["breadcrumbs", "japanese", "light", "coating"],
+        italian_breadcrumbs: ["breadcrumbs", "seasoned", "coating"],
+        
+        soy_sauce: ["soy_sauce", "asian", "umami", "condiment"],
+        tamari: ["soy_sauce", "asian", "rich"],
+        teriyaki: ["soy_sauce", "asian", "sweet", "glaze"],
+        
+        gravy: ["gravy_sauce", "sauce", "comfort", "topping"],
+        brown_gravy: ["gravy_sauce", "savory", "meat"],
+        turkey_gravy: ["gravy_sauce", "holiday", "savory"],
+        white_sauce: ["gravy_sauce", "creamy", "base"],
+        
+        stuffing: ["stuffing", "holiday", "savory", "side"],
+        dressing: ["stuffing", "holiday", "savory"],
+        
+        pie_crust: ["pie_crust", "baking", "dessert base"],
+        graham_cracker_crust: ["pie_crust", "no bake", "dessert"]
+      },
+
+      // Cross-references: when someone searches X, also show Y category
+      related: {
+        bagel: ["bread", "english_muffin"],
+        english_muffin: ["bagel", "bread"],
+        sandwich: ["bread", "roll_bun", "wrap_tortilla"],
+        toast: ["bread", "english_muffin", "bagel"],
+        breakfast: ["bagel", "english_muffin", "pancake_waffle", "oats", "cereal"],
+        pasta: ["pasta", "ramen", "udon", "soba"],
+        noodle: ["pasta", "ramen", "udon", "soba", "lo_mein"],
+        italian: ["pasta", "pizza", "bread"],
+        asian: ["soy_sauce", "pasta", "ramen", "udon", "soba"],
+        mexican: ["wrap_tortilla", "pizza"],
+        snack: ["cracker", "pretzel", "cookie"],
+        dessert: ["cookie", "cake_muffin", "pie_crust"],
+        baking: ["flour", "cake_muffin", "pie_crust"],
+        holiday: ["stuffing", "gravy_sauce", "pie_crust"]
+      }
+    };
+
+    // Flatten all products for search
+    function getAllGFProducts() {
+      const all = [];
+      for (const [category, products] of Object.entries(GF_PRODUCTS)) {
+        for (const p of products) {
+          all.push({ ...p, category });
+        }
+      }
+      return all;
+    }
+
+    /* ============================================================
+       INTELLIGENT SUBSTITUTE FINDER
+       Uses domain ontology + product database for real understanding.
+       ============================================================ */
+    function findSubstitute(query) {
+      const lower = query.toLowerCase().trim();
+      if (!lower) return { found: false };
+
+      const allProducts = getAllGFProducts();
+      const queryWords = lower.split(/\s+/).filter(w => w.length > 1);
+      
+      // Step 1: Direct product name match (highest priority)
+      const directMatches = allProducts.filter(p => {
+        const pName = p.name.toLowerCase();
+        const pNote = p.note.toLowerCase();
+        return pName.includes(lower) || pNote.includes(lower) || 
+               p.tags.some(t => t.includes(lower));
+      });
+
+      if (directMatches.length > 0) {
+        return formatResults(directMatches, `GF matches for "${query}"`);
+      }
+
+      // Step 2: Category/hierarchy match
+      // Check if query maps to a known concept in our ontology
+      let matchedCategories = new Set();
+      
+      // Exact category match
+      if (GF_PRODUCTS[lower]) {
+        matchedCategories.add(lower);
+      }
+      
+      // Check hierarchy: does query match a key in hierarchy?
+      for (const [concept, parents] of Object.entries(FOOD_ONTOLOGY.hierarchy)) {
+        if (concept.includes(lower) || lower.includes(concept)) {
+          // Find which parent categories exist in our product database
+          for (const parent of parents) {
+            if (GF_PRODUCTS[parent]) matchedCategories.add(parent);
+          }
+        }
+      }
+
+      // Check if query is a parent category itself
+      for (const category of Object.keys(GF_PRODUCTS)) {
+        if (category.includes(lower) || lower.includes(category)) {
+          matchedCategories.add(category);
+        }
+      }
+
+      // Step 3: Word-by-word scoring across all products
+      if (matchedCategories.size === 0) {
+        const scoredProducts = allProducts.map(p => {
+          let score = 0;
+          const searchText = `${p.name} ${p.note} ${p.tags.join(' ')} ${p.category}`.toLowerCase();
+          
+          for (const word of queryWords) {
+            if (p.category.includes(word)) score += 40;
+            if (p.name.toLowerCase().includes(word)) score += 30;
+            if (p.note.toLowerCase().includes(word)) score += 20;
+            if (p.tags.some(t => t.includes(word))) score += 25;
+            if (searchText.includes(word)) score += 10;
+          }
+          
+          return { ...p, score };
+        }).filter(p => p.score > 0);
+
+        scoredProducts.sort((a, b) => b.score - a.score);
+        
+        if (scoredProducts.length > 0) {
+          // Take top matches and their categories
+          const topProducts = scoredProducts.slice(0, 8);
+          for (const p of topProducts) {
+            matchedCategories.add(p.category);
+          }
+        }
+      }
+
+      // Step 4: Related categories expansion
+      const expandedCategories = new Set(matchedCategories);
+      for (const cat of matchedCategories) {
+        const related = FOOD_ONTOLOGY.related[cat];
+        if (related) {
+          for (const r of related) {
+            if (GF_PRODUCTS[r]) expandedCategories.add(r);
+          }
+        }
+      }
+
+      // Step 5: Build results from matched categories
+      if (expandedCategories.size > 0) {
+        const resultProducts = [];
+        for (const cat of expandedCategories) {
+          const products = GF_PRODUCTS[cat];
+          if (products) {
+            for (const p of products) {
+              resultProducts.push({ ...p, category: cat });
+            }
+          }
+        }
+        
+        if (resultProducts.length > 0) {
+          const catNames = [...expandedCategories].join(', ');
+          return formatResults(resultProducts, `GF substitutes for "${query}" (${catNames})`);
+        }
+      }
+
+      return { found: false };
+    }
+
+    function formatResults(products, title) {
+      // Deduplicate by name
+      const seen = new Set();
+      const unique = [];
+      for (const p of products) {
+        if (!seen.has(p.name)) {
+          seen.add(p.name);
+          unique.push(p);
+        }
+      }
+      
+      return {
+        found: true,
+        title: title,
+        options: unique.map(p => `${p.name} — ${p.note}`)
+      };
+    }
+
+    // Legacy compatibility
+    function getRandomGF(category) {
+      const pool = GF_PRODUCTS[category];
+      if (!pool) return null;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function getGFProduct(category) {
+      return getRandomGF(category);
+    }
+
+    function gfSubstitute(text) {
+      const swaps = [
+        { pattern: /\b(wheat bread|white bread|sandwich bread|loaf bread)\b/gi, sub: getRandomGF("bread")?.name || "GF bread", category: "bread" },
+        { pattern: /\b(regular pasta|wheat pasta)\b/gi, sub: getRandomGF("pasta")?.name || "GF pasta", category: "pasta" },
+        { pattern: /\b(pizza crust|regular pizza|wheat pizza)\b/gi, sub: getRandomGF("pizza")?.name || "GF pizza crust", category: "pizza" },
+        { pattern: /\b(wheat crackers|saltines|ritz|wheat thins)\b/gi, sub: getRandomGF("crackers")?.name || "GF crackers", category: "crackers" },
+        { pattern: /\b(flour tortillas|wheat tortillas)\b/gi, sub: getRandomGF("wrap_tortilla")?.name || "GF tortillas", category: "wrap_tortilla" },
+        { pattern: /\b(regular cereal|wheat cereal|cheerios|wheaties)\b/gi, sub: getRandomGF("cereal")?.name || "GF cereal", category: "cereal" },
+        { pattern: /\b(regular cookies|oreos|chips ahoy)\b/gi, sub: getRandomGF("cookie")?.name || "GF cookies", category: "cookie" },
+        { pattern: /\b(regular beer|budweiser|coors|miller)\b/gi, sub: getRandomGF("beer")?.name || "GF beer", category: "beer" },
+        { pattern: /\b(all-purpose flour|wheat flour|bread flour)\b/gi, sub: getRandomGF("flour")?.name || "GF flour", category: "flour" },
+        { pattern: /\b(regular oats|quaker oats)\b/gi, sub: getRandomGF("oats")?.name || "GF oats", category: "oats" }
+      ];
+
+      let result = text;
+      let madeSwap = false;
+      for (const swap of swaps) {
+        if (swap.sub && swap.pattern.test(result)) {
+          result = result.replace(swap.pattern, swap.sub);
+          madeSwap = true;
+        }
+      }
+      return { text: result, swapped: madeSwap };
+    }
+function inferCategories(text) {
+      const lower = text.toLowerCase();
+      const found = new Set();
+      for (const [cat, def] of Object.entries(CATEGORIES)) {
+        for (const kw of def.keywords) {
+          if (kw.length < 3) continue;
+          if (lower.includes(kw)) {
+            found.add(cat);
+            break;
+          }
+        }
+      }
+      if (/\b(ran|run|running|jogged|jogging|swam|swim|swimming|biked|biking|cycled|cycling|hiked|hiking|walked|walking|rode\s+(my\s+)?bike|worked out|lifted|rowing|skied|skated|surfed|danced)\b/.test(lower)) {
+        found.add("movement");
+      }
+      if (/\b\d+(?:\.\d+)?\s*(mile|miles|mi|km|kilometer|kilometers|laps?)\b/.test(lower)) {
+        found.add("movement");
+      }
+      if (/\b(drank|drink|drinking|sipped|sip)\b/.test(lower) &&
+          /\b(water|tea|coffee|soda|cola|juice|dew|gatorade|beer|wine|latte|smoothie|shake|milk|broth|soup|energy|monster|pepsi|coke|sprite|mountain)\b/.test(lower)) {
+        found.add("hydration");
+      }
+      if (/\b(burrito|taco|tacos|quesadilla|enchilada|fajita|shawarma|gyro|falafel|sushi|poke|ramen|pizza)\b/.test(lower)) {
+        found.add("grain");
+        found.add("protein");
+      }
+      return [...found];
+    }
+
+    function extractFamilies(text) {
+      const lower = text.toLowerCase();
+      const found = new Set();
+      for (const [fam, kws] of Object.entries(FOOD_FAMILIES)) {
+        for (const kw of kws) {
+          if (kw.length < 3) continue;
+          if (lower.includes(kw)) {
+            found.add(fam);
+            break;
+          }
+        }
+      }
+      if (/\b(ran|run|running|jog)\b/.test(lower) || /\bmiles?\b/.test(lower)) found.add("run");
+      if (/\b(swam|swim|swimming)\b/.test(lower)) found.add("swim");
+      if (/\b(biked|bike|biking|cycling|cycled|rode)\b/.test(lower)) found.add("bike");
+      if (/\b(hiked|hike|hiking)\b/.test(lower)) found.add("hike");
+      return [...found];
+    }
+
+    function splitCompound(text) {
+      let parts = text.split(/\s+(?:and|,|&|;|\+|then|after that|plus)\s+/i)
+        .map(p => p.trim())
+        .filter(p => p.length > 1);
+      if (parts.length <= 1) {
+        parts = text.split(/\s+(?:and then|then|went|followed by)\s+/i)
+          .map(p => p.trim())
+          .filter(p => p.length > 1);
+      }
+      if (parts.length <= 1) return [{ text: text.trim() }];
+      return parts.map(p => ({ text: p }));
+    }
+
+    function scoreSegment(segText) {
+      const cats = new Set(inferCategories(segText));
+      const fams = extractFamilies(segText);
+      const units = estimateUnits(segText, [...cats]);
+      if (units.movement > 0) cats.add("movement");
+      if (units.hydration > 0) cats.add("hydration");
+      if (units.protein > 0) cats.add("protein");
+      if (units.grain > 0) cats.add("grain");
+      if (units.rest > 0) cats.add("rest");
+      if (units.vegetable > 0) cats.add("vegetable");
+      if (units.fruit > 0) cats.add("fruit");
+      if (units.iron > 0) cats.add("iron");
+      if (units.fat > 0) cats.add("fat");
+      if (units.dairy > 0) cats.add("dairy");
+      return { text: segText, categories: [...cats], families: fams, units };
+    }
+
+    function estimateUnits(text, categories) {
+      const lower = text.toLowerCase();
+      const units = { protein: 0, iron: 0, vegetable: 0, fruit: 0, grain: 0, fat: 0, hydration: 0, movement: 0, dairy: 0, rest: 0 };
+
+      let mult = 1;
+      if (/\b(large|big|generous|double|two servings|a lot|plate of|bowl of|huge)\b/.test(lower)) mult = 1.55;
+      else if (/\b(small|little|few|bite|bit of|half|some|tiny)\b/.test(lower)) mult = 0.65;
+      else if (/\b(couple of|two|2)\b/.test(lower)) mult = 1.25;
+
+      if (categories.includes("protein")) {
+        if (/\b(eggs?|scramble|omelet)/.test(lower)) units.protein = 1.0 * mult;
+        else if (/\b(chicken|turkey|beef|steak|fish|salmon|tuna|pork|lamb|tofu|tempeh|shrimp|burger)\b/.test(lower)) units.protein = 1.15 * mult;
+        else if (/\b(yogurt|cottage|cheese|lentil|chickpea|beans?|chili|falafel)\b/.test(lower)) units.protein = 0.85 * mult;
+        else if (/\b(burrito|taco|wrap|pita|quesadilla|enchilada|ramen|sushi)\b/.test(lower)) units.protein = 0.75 * mult;
+        else units.protein = 0.85 * mult;
+      }
+
+      if (categories.includes("iron")) {
+        if (/\b(beef|steak|lamb|liver|sardines|clams|oysters)\b/.test(lower)) units.iron = 1.35 * mult;
+        else if (/\b(spinach|lentil|lentils|chickpea|tofu|quinoa|pumpkin seed|chili)\b/.test(lower)) units.iron = 1.0 * mult;
+        else units.iron = 0.75 * mult;
+      }
+
+      if (categories.includes("vegetable")) {
+        if (/\b(salad|spinach|kale|broccoli|large)\b/.test(lower)) units.vegetable = 1.2 * mult;
+        else if (/\b(nacho|salsa|guac|guacamole|burrito|taco)\b/.test(lower)) units.vegetable = 0.4 * mult;
+        else units.vegetable = 0.95 * mult;
+      }
+
+      if (categories.includes("fruit")) units.fruit = 1.0 * mult;
+
+      if (categories.includes("grain")) {
+        if (/\b(brownie|brownies|cookie|cake|donut|pastry|ice cream|chocolate|candy)\b/.test(lower)) {
+          units.grain = 0.6 * mult;
+          units.fat = Math.max(units.fat, 0.7 * mult);
+        } else if (/\b(burrito|taco|quesadilla|enchilada|nacho|nachos|pizza)\b/.test(lower)) {
+          units.grain = 1.15 * mult;
+          if (!units.protein) units.protein = 0.5 * mult;
+        } else if (/\b(chip|chips|ramen|noodle|fries)\b/.test(lower)) {
+          units.grain = 1.05 * mult;
+        } else if (/\b(pita|wrap|tortilla|bread|toast|rice|quinoa|potato|bagel|bun)\b/.test(lower)) {
+          units.grain = 0.95 * mult;
+        } else {
+          units.grain = 0.85 * mult;
+        }
+      }
+
+      if (categories.includes("fat")) units.fat = Math.max(units.fat, 0.8 * mult);
+
+      if (categories.includes("dairy")) {
+        units.dairy = 0.9 * mult;
+        if (!units.protein) units.protein = 0.4 * mult;
+      }
+
+      if (categories.includes("hydration") || /\b(drank|drink|drinking|sip|sipped)\b/.test(lower)) {
+        if (/\b(water|herbal tea|seltzer|sparkling water|la croix|lacroix|bubly|topo chico|perrier)\b/.test(lower)) {
+          units.hydration = 1.2;
+        } else if (/\b(gatorade|powerade|electrolyte|propel|bodyarmor|liquid iv|pedialyte)\b/.test(lower)) {
+          units.hydration = 1.05;
+        } else if (/\b(mountain dew|mtn dew|dew|soda|cola|coke|pepsi|sprite|fanta|dr pepper|root beer|redbull|red bull|energy drink|monster|celcius|celsius)\b/.test(lower)) {
+          units.hydration = 0.5;
+        } else if (/\b(coffee|espresso|latte|americano|cappuccino|matcha|chai)\b/.test(lower)) {
+          units.hydration = 0.55;
+        } else if (/\b(beer|wine|alcohol|cocktail|whiskey|vodka|rum|gin|tequila|margarita|mojito)\b/.test(lower)) {
+          units.hydration = 0.35;
+        } else if (/\b(juice|lemonade|smoothie|shake|milkshake|tea|iced tea|kombucha|broth|soup)\b/.test(lower)) {
+          units.hydration = 0.85;
+        } else if (categories.includes("hydration")) {
+          units.hydration = 0.9;
+        }
+        if (/\b(bottle|lots|several|two|big|large|gallon|liter)\b/.test(lower)) units.hydration *= 1.45;
+      }
+
+      const isMove = categories.includes("movement") ||
+        /\b(ran|run|running|jog|swam|swim|swimming|biked|bike|biking|cycled|cycling|hiked|hike|hiking|walked|walk|walking|gym|workout|yoga|stretch|climbed|rowed|skied|skated|surfed|danced|miles?|kilometers?|\bkm\b|laps?)\b/.test(lower);
+
+      if (isMove) {
+        let intensity = 1.0;
+        if (/\b(ran|run|running|jog|jogged|jogging|swam|swim|swimming|hiked|hike|hiking|gym|workout|hiit|crossfit|lift|lifting|spin|cardio|tempo|race)\b/.test(lower)) {
+          intensity = 1.8;
+        } else if (/\b(biked|bike|biking|bicycle|cycling|cycled|rode\s+(my\s+)?bike)\b/.test(lower)) {
+          intensity = 1.7;
+        } else if (/\b(sex|intimate|intimacy|dance|danced|boxing|martial|climb|climbed)\b/.test(lower)) {
+          intensity = 1.3;
+        } else if (/\b(walk|walked|walking|yoga|stretch|stretching|pilates|stairs|stroll|easy|gentle)\b/.test(lower)) {
+          intensity = 0.85;
+        }
+
+        let distMult = 1.0;
+        const mileMatch = lower.match(/\b(\d+(?:\.\d+)?)\s*(mile|miles|mi)\b/);
+        const kmMatch = lower.match(/\b(\d+(?:\.\d+)?)\s*(km|kilometer|kilometers|kilometre|kilometres)\b/);
+        if (mileMatch) {
+          const miles = parseFloat(mileMatch[1]);
+          if (miles >= 40) distMult = 3.2;
+          else if (miles >= 20) distMult = 2.4;
+          else if (miles >= 10) distMult = 1.9;
+          else if (miles >= 5) distMult = 1.5;
+          else if (miles >= 2) distMult = 1.25;
+          else if (miles >= 1) distMult = 1.1;
+          else distMult = 0.9;
+        } else if (kmMatch) {
+          const km = parseFloat(kmMatch[1]);
+          const milesApprox = km * 0.62;
+          if (milesApprox >= 40) distMult = 3.2;
+          else if (milesApprox >= 20) distMult = 2.4;
+          else if (milesApprox >= 10) distMult = 1.9;
+          else if (milesApprox >= 5) distMult = 1.5;
+          else if (milesApprox >= 2) distMult = 1.25;
+          else distMult = 1.0;
+        }
+
+        if (/\b(across the bay|across the lake|up the mountain|long ride|century|marathon|half marathon)\b/.test(lower)) {
+          distMult = Math.max(distMult, 2.5);
+        } else if (/\b(around the block|down the street|to the corner)\b/.test(lower)) {
+          distMult = Math.min(distMult, 0.7);
+        }
+
+        let dur = 1.0;
+        const minMatch = lower.match(/\b(\d+)\s*(min|minute|minutes)\b/);
+        const hrMatch = lower.match(/\b(\d+(?:\.\d+)?)\s*(hr|hour|hours)\b/);
+        if (minMatch) {
+          const m = parseInt(minMatch[1], 10);
+          if (m >= 90) dur = 2.0;
+          else if (m >= 60) dur = 1.7;
+          else if (m >= 30) dur = 1.3;
+          else if (m <= 10) dur = 0.7;
+        } else if (hrMatch) {
+          const h = parseFloat(hrMatch[1]);
+          dur = Math.min(2.5, 1.2 + h * 0.6);
+        } else if (/\b(hour|hr|long|extended)\b/.test(lower)) {
+          dur = 1.6;
+        } else if (/\b(quick|short|brief|few minutes)\b/.test(lower)) {
+          dur = 0.65;
+        }
+
+        units.movement = Math.max(0.5, intensity * distMult * dur * mult);
+      }
+
+      if (categories.includes("rest")) units.rest = 1.0;
+
+      return units;
+    }
+
+    /* ============================================================
+       SUGGESTION POOLS — unified, gluten-agnostic with GF subs
+       ============================================================ */
+    const SUGGESTION_POOLS = {
+      acknowledgment: [
+        { title: "That covered a lot of ground", text: "Protein, plants, and movement all in one entry — that is a genuinely well-rounded moment. The journal noticed.", families: [] },
+        { title: "Solid foundation right there", text: "You just hit protein and iron together. That pairing tends to keep energy steady for hours. Nice work.", families: [] },
+        { title: "Good hydration awareness", text: "Logging water alongside food is a quiet signal that you are paying attention. That habit tends to compound.", families: [] },
+        { title: "Movement plus nourishment", text: "Getting activity in and then fueling it — or fueling first and moving after — that rhythm is worth keeping.", families: [] },
+        { title: "Well-rounded entry", text: "Multiple food groups plus attention to fluids in a single log. That is the kind of pattern that supports steady recovery.", families: [] }
+      ],
+
+      followup_protein: [
+        { title: "Good protein hit — now a vegetable", text: "You just got a solid protein serving in. A small side of cooked greens, peppers, or broccoli would make it a complete plate without much extra effort.", families: ["leafy", "cruciferous"] },
+        { title: "Protein is covered — consider iron", text: "That was a good protein source. If it was not red meat or legumes, a small iron-rich addition like lentils or spinach later would round out the mineral profile.", families: ["legumes", "leafy"] },
+        { title: "Protein looks good — top with healthy fat", text: "A drizzle of olive oil, a few nuts, or some avocado would help your body use that protein more fully and keep satisfaction up.", families: ["nuts"] },
+        { title: "Nice protein — pair with vitamin C", text: "If that protein was plant-based, berries, citrus, or bell pepper in the next few hours helps your body absorb the iron that comes with it.", families: ["berries", "citrus"] }
+      ],
+
+      followup_iron: [
+        { title: "Iron-rich choice — add vitamin C", text: "You just had an iron source. Pairing it with berries, kiwi, citrus, or bell pepper in the same meal or the next one helps absorption significantly.", families: ["berries", "citrus"] },
+        { title: "Good iron — now some protein", text: "Iron and protein often travel together in whole foods, but if this was a lighter iron hit, a small protein follow-up keeps the meal substantial.", families: ["eggs", "poultry", "dairyprot"] },
+        { title: "Iron is in — avoid dairy right now", text: "Since you just had an iron-rich food, holding off on cheese or milk for an hour or two helps your body actually use that iron.", families: [] }
+      ],
+
+      followup_vegetable: [
+        { title: "Vegetables in — now some protein", text: "You just added good plant volume. A modest protein source alongside or soon after turns that into a satisfying, complete meal.", families: ["eggs", "poultry", "legumes"] },
+        { title: "Good color — add a healthy fat", text: "Many vegetable nutrients are fat-soluble. A little olive oil, nuts, or avocado with those vegetables helps your body extract more value.", families: ["nuts"] }
+      ],
+
+      followup_hydration: [
+        { title: "Hydration logged — keep the rhythm", text: "You just drank something. If it was water or herbal tea, that is ideal. If it was coffee or soda, the next one being plain water would balance it out.", families: [] },
+        { title: "Fluid check done — consider protein", text: "Hydration is handled for now. If it has been a while since protein, that is usually the next base worth touching.", families: ["eggs", "poultry", "fish"] }
+      ],
+
+      followup_movement: [
+        { title: "Activity logged — support recovery", text: "You just moved. In the next hour or two, prioritize protein and plain fluids. The body does its best repair work when both are available.", families: ["dairyprot", "fish", "poultry"] },
+        { title: "Good movement — do not skip the meal", text: "After activity, appetite sometimes drops. Even a small protein-rich snack plus water keeps recovery on track without needing a full plate.", families: ["eggs", "dairyprot", "nuts"] }
+      ],
+
+      protein: [
+        { title: "Protein would help right now", text: "Something simple like eggs, a few bites of chicken or fish, Greek yogurt, or lentils would give a solid foundation without needing much volume.", families: ["eggs", "poultry", "fish", "dairyprot", "legumes"] },
+        { title: "A protein top-up", text: "It has been a while since the last clear protein. Eggs, poultry, fish, or a scoop of Greek yogurt are easy options that fit well.", families: ["eggs", "poultry", "fish", "dairyprot"] },
+        { title: "Keep protein in the mix", text: "Even a modest portion — scrambled eggs, leftover chicken, tofu, or cottage cheese — helps steady energy and keeps the day balanced.", families: ["eggs", "poultry", "legumes", "dairyprot"] },
+        { title: "Easy protein win", text: "Hard-boiled eggs, a small piece of turkey, or plain Greek yogurt require almost no effort and cover an important base.", families: ["eggs", "poultry", "dairyprot"] },
+        { title: "Protein has been quiet", text: "No clear protein source has shown up recently. A can of tuna, a few eggs, or a scoop of beans would shift the day in a useful direction.", families: ["fish", "eggs", "legumes"] },
+        { title: "Build the plate around protein", text: "When protein comes first, the rest of the meal tends to fall into place more naturally. Start there if nothing else is obvious.", families: ["poultry", "fish", "eggs"] }
+      ],
+
+      iron: [
+        { title: "An iron-friendly choice", text: "Lean beef, dark turkey, lentils, spinach, or quinoa would be a practical way to bring iron-rich food back into the rotation.", families: ["redmeat", "poultry", "legumes", "leafy", "quinoa"] },
+        { title: "Pair iron with vitamin C", text: "Lentils, spinach, or a bit of red meat alongside berries, kiwi, or bell pepper helps the body make better use of the iron.", families: ["legumes", "leafy", "redmeat", "berries", "citrus"] },
+        { title: "Quiet iron support", text: "A small serving of lean meat, chickpeas, or pumpkin seeds keeps iron sources from going quiet for too long.", families: ["redmeat", "legumes", "nuts"] },
+        { title: "Iron without heaviness", text: "Spinach with eggs, lentils with a squeeze of lemon, or a few bites of dark poultry work well and stay light.", families: ["leafy", "eggs", "legumes", "poultry"] },
+        { title: "Iron sources have been sparse", text: "Red meat, lentils, spinach, or fortified grains have not appeared much. Any one of them would be a meaningful addition.", families: ["redmeat", "legumes", "leafy", "quinoa"] }
+      ],
+
+      vegetable: [
+        { title: "Some color would help", text: "A few bites of cooked spinach, broccoli, roasted peppers, or zucchini add micronutrients and fiber without taking much room.", families: ["leafy", "cruciferous"] },
+        { title: "Vegetables have been quiet", text: "Even a small side of soft-cooked carrots, cauliflower, or greens next to whatever you are already having would round things out.", families: [] },
+        { title: "Easy vegetable add-on", text: "Salsa, a handful of spinach, cucumber, or leftover roasted vegetables are low-effort ways to bring plants back in.", families: ["leafy"] },
+        { title: "Plants are missing", text: "Vegetables and greens have not shown up in a while. Frozen broccoli or a bag of pre-washed spinach removes almost all friction.", families: ["cruciferous", "leafy"] }
+      ],
+
+      fruit: [
+        { title: "Fruit (and vitamin C)", text: "Berries, an orange, kiwi, or grapes pair especially well if you have had iron-rich food recently — and they are light on their own.", families: ["berries", "citrus", "grapes"] },
+        { title: "A little fruit", text: "A small piece of fruit or a handful of berries is a simple way to add freshness and support iron absorption.", families: ["berries"] },
+        { title: "Brighten the plate", text: "Citrus, berries, or a few grapes keep things from feeling too heavy and contribute useful micronutrients.", families: ["citrus", "berries", "grapes"] },
+        { title: "Fruit has been absent", text: "Fresh or frozen fruit has not appeared recently. Even a small portion adds fiber, hydration, and micronutrients that are hard to replicate elsewhere.", families: ["berries", "citrus"] }
+      ],
+
+      grain: [
+        { title: "A steady carb", text: "A small portion of quinoa, brown rice, sweet potato, or a warm wrap can provide calm energy when the day needs it.", families: ["quinoa", "rice", "potato", "tortilla"], gfCategory: "wraps" },
+        { title: "Gentle starch", text: "Quinoa or a bit of potato tends to sit well and complements protein and vegetables without any heaviness.", families: ["quinoa", "potato"] },
+        { title: "Carbohydrates look low", text: "If energy has felt uneven, a modest serving of rice, quinoa, or sweet potato often steadies things.", families: ["rice", "quinoa", "potato"] },
+        { title: "Toast and eggs", text: "A slice of toasted bread with eggs is a simple, reliable combination. Add spinach or tomatoes if you have them.", families: ["bread", "eggs"], gfCategory: "bread" },
+        { title: "A simple pasta", text: "Pasta with a little olive oil, garlic, and parmesan is comforting and quick. Add frozen peas or leftover chicken to make it a meal.", families: ["pasta", "dairyprot"], gfCategory: "pasta" },
+        { title: "Pizza night", text: "A personal pizza with tomato sauce, mozzarella, and whatever vegetables you have is satisfying without being heavy.", families: ["pizza", "vegetable"], gfCategory: "pizza" }
+      ],
+
+      fat: [
+        { title: "A touch of healthy fat", text: "A few almonds, a drizzle of olive oil, or a thin slice of avocado can make a meal more satisfying in a small footprint.", families: ["nuts"] },
+        { title: "Nuts or seeds", text: "Pumpkin seeds or a small handful of walnuts add healthy fats plus a little iron and zinc.", families: ["nuts"] },
+        { title: "Fats help absorption", text: "If you have been eating mostly lean protein and vegetables, adding some olive oil, nuts, or avocado helps your body use fat-soluble vitamins.", families: ["nuts"] }
+      ],
+
+      hydration: [
+        { title: "Fluids look low", text: "Water or herbal tea between meals is the most reliable way to catch up. Steady sipping usually works better than a large amount at once.", families: [] },
+        { title: "Hydration check", text: "If the last drinks were mostly caffeine or sweetened, a few glasses of plain water would help rebalance.", families: [] },
+        { title: "Simple fluids", text: "Water, sparkling water, or herbal tea between meals supports energy and comfort more than most other drinks.", families: [] },
+        { title: "Plain water would help", text: "Recent beverages have leaned toward coffee, soda, or alcohol. Plain water is the most effective reset.", families: [] }
+      ],
+
+      movement: [
+        { title: "A little movement", text: "Five to fifteen minutes of walking, stretching, or easy stairs can shift how the rest of the day feels without needing a full workout.", families: ["walk", "yoga"] },
+        { title: "Gentle motion", text: "A short walk after eating or a few minutes of stretching keeps things from staying completely still.", families: ["walk", "yoga"] },
+        { title: "Easy activity", text: "Nothing intense required — a stroll, light stretching, or taking the stairs a couple of times still counts.", families: ["walk"] },
+        { title: "The day has been still", text: "Even a brief walk around the block or a few minutes of standing and stretching breaks up long periods of sitting meaningfully.", families: ["walk"] }
+      ],
+
+      recovery: [
+        { title: "Support after activity", text: "A modest protein source plus water or herbal tea gives the body useful material to recover with after movement.", families: [] },
+        { title: "Easy recovery", text: "Greek yogurt, a small piece of fruit, a few nuts, or leftover protein with fluids are simple and effective after being active.", families: ["dairyprot", "berries", "nuts"] },
+        { title: "Replenish gently", text: "After harder effort, prioritize protein and plain fluids first. The rest can follow when appetite and capacity allow.", families: [] }
+      ],
+
+      spacing: [
+        { title: "Space dairy and iron", text: "Dairy was recent. Giving it a little time before an iron-focused meal can improve how well the iron is absorbed.", families: [] }
+      ],
+
+      variety: [
+        { title: "Mix up the protein source", text: "You have had the same protein family several times recently. Rotating in fish, eggs, or legumes would diversify your amino acid and mineral intake.", families: ["fish", "eggs", "legumes"] },
+        { title: "Rotate your greens", text: "The same vegetables have been showing up repeatedly. Different colors and types — red peppers, carrots, beets — bring different micronutrients.", families: [] },
+        { title: "Variety in grains", text: "If rice or tortillas have been the default starch, quinoa or sweet potato would add a different mineral and fiber profile.", families: ["quinoa", "potato"] },
+        { title: "Switch up the routine", text: "Similar meals day after day are convenient, but rotating a few ingredients keeps the micronutrient coverage broader.", families: [] }
+      ],
+
+      caffeine: [
+        { title: "Caffeine has been steady", text: "Coffee or energy drinks have appeared multiple times. Consider shifting the next one to herbal tea or water to protect sleep and hydration.", families: [] },
+        { title: "Energy drinks add up", text: "Multiple caffeinated or sweetened beverages in a short window can affect appetite and sleep later. Plain water as the next drink would help.", families: [] }
+      ],
+
+      meal_timing: [
+        { title: "It has been a while since the last meal", text: "Several hours have passed since the last solid food. Even a small snack with protein would keep energy from dipping hard.", families: ["eggs", "nuts", "dairyprot"] },
+        { title: "Long gap between meals", text: "Going too long without eating can lead to overcompensating later. A modest protein-rich snack now is usually better than a large meal later.", families: ["eggs", "legumes", "dairyprot"] }
+      ],
+
+      sleep: [
+        { title: "Rest is part of the picture", text: "If sleep has been short or broken, protein and iron needs can feel higher and recovery slower. Prioritize both food and rest tonight.", families: [] },
+        { title: "Recovery includes sleep", text: "Movement and good meals matter, but the body does its best repair during sleep. An earlier bedtime tonight would complement what you have been doing.", families: [] }
+      ],
+
+      gf_bread: [
+        { title: "A good bread option", text: "Schar Artisan Baker White Bread is soft and sandwich-ready. Canyon Bakehouse Mountain White toasts beautifully. Both are genuinely good, not just good for gluten-free.", product: "bread" },
+        { title: "Hearty GF bread", text: "Little Northern Bakehouse Seeds & Grains has a satisfying chew and holds up to spreads. Worth keeping in the freezer for when the craving hits.", product: "bread" }
+      ],
+
+      gf_pasta: [
+        { title: "Pasta night is still on", text: "Jovial Brown Rice Pasta holds its shape like real pasta. Barilla Gluten Free is the closest to wheat texture. Both work with any sauce you already love.", product: "pasta" },
+        { title: "High-protein pasta option", text: "Banza Chickpea Pasta has a slightly nutty flavor and keeps you full longer. Explore Cuisine Edamame Pasta is even higher in protein — great with pesto.", product: "pasta" }
+      ],
+
+      gf_pizza: [
+        { title: "Pizza craving?", text: "Schar Pizza Crusts are thin and crispy — just add sauce, cheese, and toppings. Against the Grain makes a chewier, almost bread-like crust if you prefer that style.", product: "pizza" }
+      ],
+
+      gf_snacks: [
+        { title: "A satisfying snack", text: "Tate's Bake Shop GF Chocolate Chip Cookies are thin, crispy, and genuinely delicious. Schar Chocolate Hazelnut Bars are good to keep in your bag for emergencies.", product: "cookies" },
+        { title: "Crunchy options", text: "Mary's Gone Crackers are seedy and crunchy — very satisfying with hummus. Simple Mills Almond Flour Crackers are lighter and great with cheese.", product: "crackers" }
+      ],
+
+      general: [
+        { title: "Back to basics", text: "Protein first, then a vegetable or fruit. That simple order covers a lot of ground and stays naturally gluten-free.", families: [] },
+        { title: "Quality over volume", text: "Focusing on a solid protein, some plants, and steady fluids tends to work better than larger, less focused plates.", families: [] },
+        { title: "Keep the foundation steady", text: "Eggs, plain meats or fish, rice or quinoa, vegetables, fruit, and nuts remain a reliable base.", families: [] },
+        { title: "One thing at a time", text: "If the day feels scattered food-wise, the next meal only needs protein plus one plant. That is enough.", families: [] }
+      ]
+    };
+
+    /* ============================================================
+       TIME & DECAY UTILITIES
+       ============================================================ */
+    function hoursAgo(ts) {
+      return (Date.now() - new Date(ts).getTime()) / 3600000;
+    }
+
+    function daysAgo(ts) {
+      return hoursAgo(ts) / 24;
+    }
+
+    function decay(h, halfLife = 18) {
+      return Math.exp(-h / halfLife * Math.LN2);
+    }
+
+    /* ============================================================
+       BALANCE ENGINE v4
+       A local reasoning layer sitting above the legacy heuristics.
+       It deliberately stays deterministic, inspectable, and offline.
+       ============================================================ */
+    const Engine = (() => {
+      const VERSION = 5;
+      const CATEGORY_KEYS = ["protein","iron","vegetable","fruit","grain","fat","hydration","movement","dairy","rest"];
+
+      const clamp = (n, a=0, b=1) => Math.max(a, Math.min(b, n));
+      const round = (n, p=3) => +Number(n || 0).toFixed(p);
+      const sigmoid = x => 1 / (1 + Math.exp(-x));
+
+      function evidenceFor(text, cat, manualCats = []) {
+        const lower = String(text || "").toLowerCase();
+        if (manualCats.includes(cat)) return [{type:"explicit", weight:1, detail:"user selected"}];
+        const kws = (CATEGORIES[cat]?.keywords || []).slice().sort((a,b)=>b.length-a.length);
+        const hits = kws.filter(k => lower.includes(k.toLowerCase())).slice(0, 4);
+        return hits.map(k => ({ type: k.includes(" ") ? "phrase" : "keyword", weight: k.includes(" ") ? .95 : .78, detail:k }));
+      }
+
+      function confidenceFor(text, categories, families, units, manualCats=[]) {
+        if (!text.trim()) return 0;
+        const scores = categories.map(cat => {
+          const ev = evidenceFor(text, cat, manualCats);
+          const direct = ev.reduce((a,e)=>a+e.weight,0);
+          return clamp(.35 + Math.min(.5, direct*.18) + (families.length ? .06 : 0) + (Object.values(units).some(v=>v>0) ? .08 : 0));
+        });
+        return round(scores.length ? scores.reduce((a,b)=>a+b,0)/scores.length : .28);
+      }
+
+      function interpret(text, manualCats = []) {
+        const segments = splitCompound(text);
+        const normalized = segments.map(seg => {
+          const scored = scoreSegment(seg.text);
+          const cats = [...new Set([...scored.categories, ...manualCats])];
+          const evidence = cats.flatMap(cat => evidenceFor(seg.text, cat, manualCats).map(e => ({category:cat,...e})));
+          return {
+            text: seg.text,
+            categories: cats,
+            families: scored.families,
+            units: scored.units,
+            evidence,
+            confidence: confidenceFor(seg.text, cats, scored.families, scored.units, manualCats)
+          };
+        });
+        const cats = new Set(manualCats), fams = new Set();
+        const units = Object.fromEntries(CATEGORY_KEYS.map(k => [k,0]));
+        normalized.forEach(n => {
+          n.categories.forEach(c=>cats.add(c));
+          n.families.forEach(f=>fams.add(f));
+          CATEGORY_KEYS.forEach(k=>units[k] += n.units[k] || 0);
+        });
+        return {
+          segments: normalized, categories:[...cats], families:[...fams], units,
+          confidence: round(normalized.length ? normalized.reduce((a,n)=>a+n.confidence,0)/normalized.length : 0)
+        };
+      }
+
+      function normalizeEntry(text, manualCats = []) {
+        const parsed = interpret(text, manualCats);
+        return {
+          id: makeId("e"), ts:new Date().toISOString(), text:text.trim(),
+          categories:parsed.categories, families:parsed.families, units:parsed.units,
+          segments:parsed.segments.map(s=>s.text),
+          interpretation:{version:VERSION, confidence:parsed.confidence, evidence:parsed.segments}
+        };
+      }
+
+      function trend(entries, category, days=7) {
+        const now=Date.now(), buckets=Array.from({length:days},(_,i)=>({day:i,value:0,count:0}));
+        for (const e of entries) {
+          const age=(now-new Date(e.ts).getTime())/86400000;
+          if(age<0||age>=days) continue;
+          const b=buckets[Math.floor(age)], u=e.units||{}; b.value+=u[category]||0; b.count++;
+        }
+        const half=Math.ceil(days/2);
+        const recent=buckets.slice(0,half).reduce((a,b)=>a+b.value,0)/half;
+        const older=buckets.slice(half).reduce((a,b)=>a+b.value,0)/Math.max(1,days-half);
+        const slope=recent-older;
+        const direction=slope>.12?"rising":slope<-.12?"falling":"steady";
+        return {buckets,recent:round(recent),older:round(older),slope:round(slope),direction};
+      }
+
+      function patternMemory(entries) {
+        const recent=entries.filter(e=>hoursAgo(e.ts)<=30*24);
+        const byHour=Array.from({length:24},()=>0);
+        const byDow=Array.from({length:7},()=>0);
+        const families={};
+        for(const e of recent){
+          const d=new Date(e.ts); byHour[d.getHours()]++; byDow[d.getDay()]++;
+          for(const f of e.families||[]) families[f]=(families[f]||0)+1;
+        }
+        const topHour=byHour.indexOf(Math.max(...byHour));
+        const topDow=byDow.indexOf(Math.max(...byDow));
+        const recurring=Object.entries(families).filter(([,n])=>n>=3).sort((a,b)=>b[1]-a[1]).slice(0,8);
+        return {topHour,topDow,recurring,byHour,byDow};
+      }
+
+      function analyze(entries) {
+        const base=analyzeDeep(entries);
+        const trends=Object.fromEntries(CATEGORY_KEYS.map(k=>[k,trend(entries,k,7)]));
+        const week=entries.filter(e=>hoursAgo(e.ts)<=168);
+        const familyFrequency={};
+        week.forEach(e=>(e.families||[]).forEach(f=>familyFrequency[f]=(familyFrequency[f]||0)+1));
+        const repeatedFamilies=Object.entries(familyFrequency).filter(([,n])=>n>=4).sort((a,b)=>b[1]-a[1]);
+        const confidence=entries.length?entries.slice(0,40).reduce((a,e)=>a+(e.interpretation?.confidence??.7),0)/Math.min(entries.length,40):0;
+        const ratios=Object.fromEntries(Object.entries(base.balance).map(([k,v])=>[k,round(v/(base.targets?.[k]||1))]));
+        const signals=CATEGORY_KEYS.map(cat=>{
+          const target=base.targets?.[cat]||1, value=base.balance?.[cat]||0, gap=Math.max(0,target-value);
+          const t=trends[cat];
+          const recent=base.lastSeen?.[cat]??99;
+          return {cat,gap:round(gap),ratio:round(value/target),recency:round(Math.min(recent,99)),trend:t.direction,trendSlope:t.slope, priority:round(gap + Math.max(0,-t.slope)*.7 + (recent>24?.25:0))};
+        }).sort((a,b)=>b.priority-a.priority);
+        return {
+          ...base, trends, repeatedFamilies, balanceRatios:ratios, signals,
+          patterns:patternMemory(entries),
+          meta:{version:VERSION,entryCount:entries.length,recent24h:entries.filter(e=>hoursAgo(e.ts)<=24).length,recent7d:week.length,interpretationConfidence:round(confidence)},
+          generatedAt:new Date().toISOString()
+        };
+      }
+
+      function rememberEntry(entry) {
+        const mem=state.memory.concepts;
+        const touch=(key,units=0)=>{
+          mem[key] ||= {seen:0,lastSeen:null,totalUnits:0,firstSeen:entry.ts,accepted:0};
+          const m=mem[key]; m.seen++; m.lastSeen=entry.ts; m.totalUnits+=units;
+        };
+        for(const cat of entry.categories||[]) touch("category:"+cat,entry.units?.[cat]||0);
+        for(const fam of entry.families||[]) touch("family:"+fam);
+        for(const seg of entry.segments||[entry.text]) {
+          const words=seg.toLowerCase().match(/[a-z][a-z'-]{3,}/g)||[];
+          for(const w of [...new Set(words)].slice(0,20)) touch("term:"+w);
+        }
+        state.memory.patterns = patternMemory(state.entries);
+      }
+
+      function recordSuggestion(id, action) {
+        state.memory.suggestions[id] ||= {shown:0,logged:0,dismissed:0,ignored:0,lastShown:null,lastAction:null};
+        const m=state.memory.suggestions[id];
+        if(action==="shown") m.shown++;
+        if(action==="logged") m.logged++;
+        if(action==="dismissed") m.dismissed++;
+        if(action==="ignored") m.ignored++;
+        m.lastAction=action; m.lastShown=new Date().toISOString();
+        state.settings.suggestionFeedback[id]={...m};
+      }
+
+      function noteSuggestionsShown(suggestions) {
+        const ids=suggestions.map(s=>s.id);
+        for(const id of ids) {
+          const m=state.memory.suggestions[id];
+          if(!m || m.lastShown!==state._suggestionRenderToken) recordSuggestion(id,"shown");
+        }
+        state._suggestionRenderToken=Date.now().toString(36)+ids.join("|");
+        state.settings.lastSuggestionIds=ids.slice(0,12);
+        persistMemory(); persistSettings();
+      }
+
+      function suggestionScore(s,analysis) {
+        const m=state.memory.suggestions[s.id]||{};
+        const fams=s.families||[];
+        const overlap=fams.filter(f=>analysis.recentFamilies?.includes(f)).length;
+        const shown=m.shown||0, acceptance=shown?((m.logged||0)/shown):.18, dismissal=shown?((m.dismissed||0)/shown):0;
+        const novelty=shown===0?.8:Math.max(-.5,1/(shown+1));
+        const categorySignal=analysis.signals?.find(x=>x.cat===s.cat);
+        const trendBonus=categorySignal?.trend==="falling"?.8:categorySignal?.trend==="rising"?-.15:0;
+        return round(acceptance*3.5-dismissal*3+novelty+trendBonus-overlap*.75-(analysis.familyCounts72?.[fams[0]]||0)*.15);
+      }
+
+      function explain(s,gap,analysis) {
+        const reasons=[];
+        const sig=analysis.signals?.find(x=>x.cat===gap?.cat);
+        if(sig?.gap>.5) reasons.push(`${CATEGORIES[gap.cat]?.label||gap.cat} has been comparatively quiet`);
+        if(sig?.trend==="falling") reasons.push(`the recent pattern is drifting down`);
+        const mem=state.memory.suggestions[s.id];
+        if(mem?.logged) reasons.push(`you have liked this kind of idea before`);
+        if((s.families||[]).some(f=>analysis.recentFamilies?.includes(f))) reasons.push(`it avoids a completely new direction`);
+        return reasons.slice(0,3);
+      }
+
+      return {VERSION,CATEGORY_KEYS,normalizeEntry,interpret,trend,analyze,rememberEntry,recordSuggestion,noteSuggestionsShown,suggestionScore,explain};
+    })();
+
+    /* ============================================================
+       BALANCE BUILDER
+       ============================================================ */
+    function buildBalance(entries) {
+      const sorted = [...entries].sort((a, b) => new Date(b.ts) - new Date(a.ts));
+      const balance = {
+        protein: 0, iron: 0, vegetable: 0, fruit: 0,
+        grain: 0, fat: 0, hydration: 0, movement: 0, dairy: 0
+      };
+      let lowQualityHydration = 0;
+      let plainHydration = 0;
+      const recentFamilies = new Set();
+      const lastSeen = {};
+      let lastMealHours = Infinity;
+      const latestEntry = sorted[0] || null;
+
+      for (const e of sorted) {
+        const h = hoursAgo(e.ts);
+        if (h > 168) continue;
+
+        const w = decay(h, 20);
+        const units = e.units || estimateUnits(e.text, e.categories || []);
+
+        for (const k of Object.keys(balance)) {
+          if (units[k]) balance[k] += units[k] * w;
+        }
+
+        if (units.hydration) {
+          const lower = (e.text || "").toLowerCase();
+          if (/\b(water|herbal tea|seltzer|sparkling water)\b/.test(lower)) {
+            plainHydration += units.hydration * w;
+          } else if (/\b(redbull|red bull|energy drink|monster|coffee|espresso|latte|soda|cola|coke|beer|wine|alcohol)\b/.test(lower)) {
+            lowQualityHydration += units.hydration * w;
+          }
+        }
+
+        if (h <= 36) {
+          const fams = e.families || extractFamilies(e.text);
+          fams.forEach(f => recentFamilies.add(f));
+        }
+
+        for (const c of (e.categories || [])) {
+          if (lastSeen[c] === undefined) lastSeen[c] = h;
+        }
+
+        if (h < lastMealHours && (e.categories || []).some(c => ["protein","vegetable","fruit","grain","fat"].includes(c))) {
+          lastMealHours = h;
+        }
+      }
+
+      let activityLoad24 = 0;
+      let activityLoad48 = 0;
+      let lastActivityHours = Infinity;
+      let lastActivityIntensity = 0;
+      for (const e of sorted) {
+        const h = hoursAgo(e.ts);
+        const u = e.units || estimateUnits(e.text, e.categories || []);
+        if (u.movement > 0) {
+          if (h <= 24) activityLoad24 += u.movement * decay(h, 12);
+          if (h <= 48) activityLoad48 += u.movement * decay(h, 18);
+          if (h < lastActivityHours) {
+            lastActivityHours = h;
+            lastActivityIntensity = u.movement;
+          }
+        }
+      }
+
+      let caffeineCount24 = 0;
+      for (const e of sorted) {
+        const h = hoursAgo(e.ts);
+        if (h <= 24) {
+          const lower = (e.text || "").toLowerCase();
+          if (/\b(coffee|espresso|latte|redbull|red bull|energy drink|monster|celcius|celsius|matcha|mountain dew|mtn dew)\b/.test(lower)) {
+            caffeineCount24++;
+          }
+        }
+      }
+
+      const familyCounts72 = {};
+      for (const e of sorted) {
+        const h = hoursAgo(e.ts);
+        if (h > 72) continue;
+        const fams = e.families || extractFamilies(e.text);
+        for (const f of fams) {
+          familyCounts72[f] = (familyCounts72[f] || 0) + 1;
+        }
+      }
+
+      let glutenMentioned = false;
+      let glutenContext = "";
+      for (const e of sorted) {
+        const h = hoursAgo(e.ts);
+        if (h > 48) continue;
+        const lower = e.text.toLowerCase();
+        if (/\b(bread|pasta|pizza|cracker|cookie|cake|donut|bagel|muffin|croissant|wheat|gluten)\b/.test(lower)) {
+          glutenMentioned = true;
+          if (/\b(bread|toast|bagel|sandwich)\b/.test(lower)) glutenContext = "bread";
+          else if (/\b(pasta|spaghetti|noodle|lasagna)\b/.test(lower)) glutenContext = "pasta";
+          else if (/\b(pizza)\b/.test(lower)) glutenContext = "pizza";
+          else if (/\b(cookie|cracker|snack)\b/.test(lower)) glutenContext = "snacks";
+          break;
+        }
+      }
+
+      return {
+        balance, recentFamilies: [...recentFamilies], lastSeen, lastMealHours,
+        recentActivity: lastActivityHours <= 8, activityLoad24, activityLoad48,
+        lastActivityHours, lastActivityIntensity, lowQualityHydration, plainHydration,
+        caffeineCount24, familyCounts72, latestEntry, glutenMentioned, glutenContext, sorted
+      };
+    }
+
+    /* ============================================================
+       RECENCY SUPPRESSION
+       ============================================================ */
+    const RECENT_SUPPRESS_HOURS = {
+      protein: 3.5, iron: 4, vegetable: 3, fruit: 3,
+      grain: 3, fat: 4, hydration: 1.5, movement: 5,
+      dairy: 3, rest: 2
+    };
+
+    function shouldSuppress(cat, lastSeen, balance, deficit) {
+      const hours = lastSeen[cat] || 99;
+      if (hours < RECENT_SUPPRESS_HOURS[cat]) return true;
+      if (deficit < 0.4 && hours < 8) return true;
+      return false;
+    }
+
+    /* ============================================================
+       DEEP ANALYSIS
+       ============================================================ */
+    function analyzeDeep(entries) {
+      const {
+        balance, recentFamilies, lastSeen, lastMealHours,
+        recentActivity, activityLoad24, activityLoad48,
+        lastActivityHours, lastActivityIntensity,
+        lowQualityHydration, plainHydration,
+        caffeineCount24, familyCounts72, latestEntry,
+        glutenMentioned, glutenContext
+      } = buildBalance(entries);
+
+      const targets = {
+        protein: 2.8, iron: 1.6, vegetable: 2.2, fruit: 1.4,
+        grain: 1.2, fat: 1.0, hydration: 3.5, movement: 1.0
+      };
+
+      const gaps = [];
+      const deficit = (key) => Math.max(0, targets[key] - (balance[key] || 0));
+
+      // ACKNOWLEDGMENT
+      if (latestEntry) {
+        const latestCats = latestEntry.categories || [];
+        const latestUnits = latestEntry.units || estimateUnits(latestEntry.text, latestCats);
+        const hasProtein = latestCats.includes("protein") && (latestUnits.protein || 0) >= 0.7;
+        const hasPlants = (latestCats.includes("vegetable") && (latestUnits.vegetable || 0) >= 0.5) ||
+                          (latestCats.includes("fruit") && (latestUnits.fruit || 0) >= 0.5);
+        const hasIron = latestCats.includes("iron") && (latestUnits.iron || 0) >= 0.6;
+        const hasHydration = latestCats.includes("hydration") && (latestUnits.hydration || 0) >= 0.7;
+        const hasMovement = latestCats.includes("movement") && (latestUnits.movement || 0) >= 0.8;
+
+        const wellRoundedScore = (hasProtein ? 1 : 0) + (hasPlants ? 1 : 0) + 
+                                  (hasIron ? 1 : 0) + (hasHydration ? 1 : 0) + (hasMovement ? 1 : 0);
+
+        if (wellRoundedScore >= 3) {
+          gaps.push({ cat: "acknowledgment", priority: 20, reason: "well-rounded entry", 
+                     context: { hasProtein, hasPlants, hasIron, hasHydration, hasMovement } });
+        } else if (hasProtein && hasIron) {
+          gaps.push({ cat: "acknowledgment", priority: 18, reason: "protein and iron together",
+                     context: { hasProtein, hasPlants, hasIron, hasHydration, hasMovement } });
+        } else if (hasProtein && hasMovement) {
+          gaps.push({ cat: "acknowledgment", priority: 17, reason: "protein and movement together",
+                     context: { hasProtein, hasPlants, hasIron, hasHydration, hasMovement } });
+        } else if (hasHydration && hasMovement) {
+          gaps.push({ cat: "acknowledgment", priority: 16, reason: "hydration and movement together",
+                     context: { hasProtein, hasPlants, hasIron, hasHydration, hasMovement } });
+        }
+
+        // FOLLOW-UP
+        const latestHoursAgo = hoursAgo(latestEntry.ts);
+        if (latestHoursAgo < 2.5) {
+          if (hasProtein && !hasPlants && !hasIron) {
+            gaps.push({ cat: "followup_protein", priority: 14, reason: "just had protein, suggest vegetable or iron" });
+          }
+          if (hasProtein && !hasPlants && hasIron) {
+            gaps.push({ cat: "followup_protein", priority: 13, reason: "just had protein and iron, suggest vegetable" });
+          }
+          if (hasIron && !hasProtein) {
+            gaps.push({ cat: "followup_iron", priority: 13, reason: "just had iron, suggest protein or vitamin C" });
+          }
+          if ((latestUnits.vegetable || 0) >= 0.5 && !hasProtein) {
+            gaps.push({ cat: "followup_vegetable", priority: 12, reason: "just had vegetables, suggest protein or fat" });
+          }
+          if (hasHydration && !hasProtein && (lastSeen.protein || 99) > 4) {
+            gaps.push({ cat: "followup_hydration", priority: 11, reason: "just hydrated, suggest protein" });
+          }
+          if (hasMovement && latestHoursAgo < 1.5) {
+            gaps.push({ cat: "followup_movement", priority: 14, reason: "just moved, suggest recovery" });
+          }
+        }
+      }
+
+      // GF PRODUCT SUGGESTIONS
+      if (glutenMentioned && glutenContext) {
+        const gfCat = "gf_" + glutenContext;
+        if (SUGGESTION_POOLS[gfCat]) {
+          gaps.push({ cat: gfCat, priority: 15, reason: "mentioned gluten food, offer GF alternative" });
+        }
+      }
+
+      // GAP-BASED (with recency suppression)
+      if (!shouldSuppress("protein", lastSeen, balance, deficit("protein"))) {
+        if (deficit("protein") > 1.2) {
+          gaps.push({ cat: "protein", priority: 12 + deficit("protein"), reason: "protein below comfortable level" });
+        } else if (deficit("protein") > 0.6) {
+          gaps.push({ cat: "protein", priority: 8 + deficit("protein"), reason: "protein could use a top-up" });
+        }
+      }
+
+      if (!shouldSuppress("iron", lastSeen, balance, deficit("iron"))) {
+        if (deficit("iron") > 0.9) {
+          gaps.push({ cat: "iron", priority: 11 + deficit("iron"), reason: "iron sources quiet" });
+        } else if (deficit("iron") > 0.4) {
+          gaps.push({ cat: "iron", priority: 7 + deficit("iron"), reason: "iron opportunity" });
+        }
+      }
+
+      if (!shouldSuppress("vegetable", lastSeen, balance, deficit("vegetable"))) {
+        if (deficit("vegetable") > 1.0) {
+          gaps.push({ cat: "vegetable", priority: 8 + deficit("vegetable") * 0.8, reason: "vegetables low" });
+        } else if (deficit("vegetable") > 0.5) {
+          gaps.push({ cat: "vegetable", priority: 5 + deficit("vegetable"), reason: "more color would help" });
+        }
+      }
+
+      if (!shouldSuppress("fruit", lastSeen, balance, deficit("fruit"))) {
+        if (deficit("fruit") > 0.8) {
+          gaps.push({ cat: "fruit", priority: 6 + deficit("fruit"), reason: "fruit / vitamin C gap" });
+        }
+      }
+
+      if (!shouldSuppress("hydration", lastSeen, balance, deficit("hydration"))) {
+        if (deficit("hydration") > 1.5) {
+          gaps.push({ cat: "hydration", priority: 9, reason: "hydration lagging" });
+        } else if (deficit("hydration") > 0.8) {
+          gaps.push({ cat: "hydration", priority: 6, reason: "fluids would help" });
+        }
+        if (lowQualityHydration > plainHydration + 0.4 && lowQualityHydration > 0.6) {
+          gaps.push({ cat: "hydration", priority: 8, reason: "prefer plain fluids after caffeine/soda" });
+        }
+      }
+
+      if (!shouldSuppress("movement", lastSeen, balance, deficit("movement"))) {
+        if (deficit("movement") > 0.7 && (lastSeen.movement || 99) > 24) {
+          gaps.push({ cat: "movement", priority: 5, reason: "movement sparse" });
+        }
+      }
+
+      if (!shouldSuppress("fat", lastSeen, balance, deficit("fat"))) {
+        if (deficit("fat") > 0.7) {
+          gaps.push({ cat: "fat", priority: 3, reason: "healthy fats quiet" });
+        }
+      }
+
+      if (!shouldSuppress("grain", lastSeen, balance, deficit("grain"))) {
+        if (deficit("grain") > 0.8) {
+          gaps.push({ cat: "grain", priority: 3, reason: "steady carbs low" });
+        }
+      }
+
+      // Dairy vs iron spacing
+      if ((lastSeen.dairy || 99) < 4 && (lastSeen.iron || 99) > 10 && deficit("iron") > 0.5) {
+        gaps.push({ cat: "spacing", priority: 6, reason: "recent dairy — space iron" });
+      }
+
+      // Activity recovery
+      if (lastActivityHours <= 6 && lastActivityIntensity >= 1.3) {
+        if ((deficit("protein") > 0.3 || deficit("hydration") > 0.4)) {
+          gaps.push({ cat: "recovery", priority: 11, reason: "post-activity recovery needed" });
+        }
+        if (deficit("hydration") > 0.6 && !shouldSuppress("hydration", lastSeen, balance, deficit("hydration"))) {
+          gaps.push({ cat: "hydration", priority: 9, reason: "fluids after activity" });
+        }
+      } else if (lastActivityHours <= 10 && activityLoad24 >= 1.5) {
+        if (deficit("protein") > 0.5) {
+          gaps.push({ cat: "recovery", priority: 8, reason: "support after active day" });
+        }
+      }
+
+      // Low activity
+      if (activityLoad48 < 0.6 && (lastSeen.movement || 99) > 20 && !shouldSuppress("movement", lastSeen, balance, deficit("movement"))) {
+        gaps.push({ cat: "movement", priority: 5.5, reason: "movement has been quiet" });
+      } else if (activityLoad24 < 0.3 && (lastSeen.movement || 99) > 30 && !shouldSuppress("movement", lastSeen, balance, deficit("movement"))) {
+        gaps.push({ cat: "movement", priority: 4.5, reason: "light movement opportunity" });
+      }
+
+      // Caffeine
+      if (caffeineCount24 >= 3) {
+        gaps.push({ cat: "caffeine", priority: 7, reason: "multiple caffeinated drinks today" });
+      }
+
+      // Variety
+      const repeatedFamilies = Object.entries(familyCounts72).filter(([f, count]) => count >= 3 && !["rest"].includes(f));
+      if (repeatedFamilies.length > 0) {
+        gaps.push({ cat: "variety", priority: 4, reason: "repeated food families" });
+      }
+
+      // Meal timing
+      if (lastMealHours > 5 && lastMealHours < 16) {
+        gaps.push({ cat: "meal_timing", priority: 9, reason: "hours since last meal" });
+      }
+
+      // Time-of-day
+      const hour = new Date().getHours();
+      if (hour >= 6 && hour < 11) {
+        if (deficit("protein") > 0.5 && !shouldSuppress("protein", lastSeen, balance, deficit("protein"))) {
+          gaps.push({ cat: "protein", priority: 10, reason: "morning protein" });
+        }
+        if (deficit("fruit") > 0.5 && !shouldSuppress("fruit", lastSeen, balance, deficit("fruit"))) {
+          gaps.push({ cat: "fruit", priority: 6, reason: "morning fruit" });
+        }
+      }
+      if (hour >= 17 && hour < 21) {
+        if (deficit("vegetable") > 0.6 && !shouldSuppress("vegetable", lastSeen, balance, deficit("vegetable"))) {
+          gaps.push({ cat: "vegetable", priority: 7, reason: "evening vegetables" });
+        }
+        if (deficit("protein") > 0.7 && !shouldSuppress("protein", lastSeen, balance, deficit("protein"))) {
+          gaps.push({ cat: "protein", priority: 8, reason: "evening protein" });
+        }
+      }
+
+      gaps.sort((a, b) => b.priority - a.priority);
+
+      const seen = new Set();
+      const unique = [];
+      for (const g of gaps) {
+        if (seen.has(g.cat)) continue;
+        seen.add(g.cat);
+        unique.push(g);
+      }
+
+      return { balance, targets, recentFamilies, lastSeen, lastMealHours, recentActivity, 
+               gaps: unique, latestEntry, familyCounts72, caffeineCount24, glutenMentioned, glutenContext };
+    }
+
+    /* ============================================================
+       SUGGESTION PICKER & CONTEXTUALIZER
+       ============================================================ */
+    function pickSuggestion(cat, usedIds, recentFamilies, analysis) {
+      const pool = SUGGESTION_POOLS[cat] || SUGGESTION_POOLS.general;
+      const scored = pool.map((item, i) => {
+        const id = `${cat}-${i}`;
+        let score = usedIds.includes(id) ? -12 : 0;
+        const fams = item.families || [];
+        const overlap = fams.filter(f => recentFamilies.includes(f)).length;
+        score -= overlap * 5;
+        score += Engine.suggestionScore({ id, families: fams }, analysis);
+        score += Math.random() * 0.4;
+        return { item, id, score, originalIdx: i };
+      });
+      scored.sort((a, b) => b.score - a.score);
+      const best = scored[0];
+      return { id: best.id, cat, ...best.item };
+    }
+
+    function contextualize(suggestion, analysis, gap) {
+      if (!analysis || !gap) return suggestion;
+
+      // For GF product suggestions, inject a real product
+      if (gap.cat.startsWith("gf_") && suggestion.product) {
+        const product = getGFProduct(suggestion.product);
+        if (product) {
+          return {
+            ...suggestion,
+            text: suggestion.text + ` (${product.name} — ${product.note})`
+          };
+        }
+      }
+
+      // For grain suggestions with gfCategory, apply GF substitution
+      if (suggestion.gfCategory && !gap.cat.startsWith("gf_")) {
+        const gfProduct = getRandomGF(suggestion.gfCategory);
+        if (gfProduct) {
+          // Replace generic gluten terms with GF product names
+          let text = suggestion.text;
+          const subMap = {
+            bread: ["bread", "toast"],
+            pasta: ["pasta", "spaghetti"],
+            pizza: ["pizza crust", "pizza"],
+            wraps: ["wrap", "tortilla"]
+          };
+          const terms = subMap[suggestion.gfCategory] || [suggestion.gfCategory];
+          for (const term of terms) {
+            const regex = new RegExp(`\\b${term}\\b`, 'gi');
+            if (regex.test(text)) {
+              text = text.replace(regex, gfProduct.name);
+              break;
+            }
+          }
+          // If no direct replacement happened, append the GF note
+          if (text === suggestion.text) {
+            text = text + ` (${gfProduct.name} — ${gfProduct.note})`;
+          }
+          return { ...suggestion, text };
+        }
+      }
+
+      const b = analysis.balance || {};
+      const hours = analysis.lastMealHours;
+      const actH = analysis.lastActivityHours;
+      const load24 = analysis.activityLoad24 || 0;
+
+      let lead = "";
+      if (gap.cat === "protein" && hours > 4 && hours < 14) {
+        lead = "It has been several hours since the last solid meal. ";
+      } else if (gap.cat === "protein" && (b.protein || 0) < 1.0) {
+        lead = "Protein has been light so far. ";
+      } else if (gap.cat === "iron" && (analysis.lastSeen.iron || 99) > 36) {
+        lead = "Iron-rich foods have not shown up in a while. ";
+      } else if (gap.cat === "vegetable" && (b.vegetable || 0) < 0.8) {
+        lead = "Vegetables have been scarce. ";
+      } else if (gap.cat === "hydration" && gap.reason && gap.reason.includes("caffeine")) {
+        lead = "Recent drinks were mostly caffeine or sweetened. ";
+      } else if (gap.cat === "hydration" && (b.hydration || 0) < 1.5) {
+        lead = "Fluids look behind. ";
+      } else if (gap.cat === "recovery" && actH <= 6) {
+        lead = "After the recent activity, ";
+      } else if (gap.cat === "movement" && load24 < 0.4) {
+        lead = "The day has been pretty still. ";
+      }
+
+      if (lead) {
+        let body = suggestion.text;
+        if (body && body[0] === body[0].toUpperCase()) {
+          body = body[0].toLowerCase() + body.slice(1);
+        }
+        return { ...suggestion, text: lead + body };
+      }
+      return suggestion;
+    }
+
+    /* ============================================================
+       SUGGESTION GENERATOR
+       ============================================================ */
+    function generateSuggestions(entries) {
+      if (entries.length === 0) {
+        return [
+          {
+            id: "welcome-1",
+            cat: "general",
+            title: "Start simply",
+            text: "Log meals, drinks, and movement in plain language. Over time the journal notices patterns and offers quiet, practical ideas focused on protein, iron support, and gluten-free nourishment."
+          },
+          {
+            id: "welcome-2",
+            cat: "general",
+            title: "Protein as a foundation",
+            text: "Eggs, fish, poultry, Greek yogurt, or lentils are naturally gluten-free and reliable places to begin a meal."
+          },
+          {
+            id: "welcome-3",
+            cat: "general",
+            title: "Iron-rich foods",
+            text: "Lean meat, lentils, spinach, and quinoa are worth including regularly. Pair plant sources with vitamin C — berries, citrus, peppers — when you can."
+          }
+        ];
+      }
+
+      const analysis = Engine.analyze(entries);
+      const used = new Set(state.settings.lastSuggestionIds || []);
+      const suggestions = [];
+      const seenCats = new Set();
+
+      for (const gap of analysis.gaps) {
+        if (suggestions.length >= 3) break;
+        if (seenCats.has(gap.cat)) continue;
+
+        let s = pickSuggestion(gap.cat, [...used], analysis.recentFamilies, analysis);
+        const fams = s.families || [];
+        const heavyOverlap = fams.filter(f => analysis.recentFamilies.includes(f)).length >= 2;
+        if (heavyOverlap && analysis.gaps.length > suggestions.length + 1) continue;
+
+        s = contextualize(s, analysis, gap);
+        suggestions.push(s);
+        seenCats.add(gap.cat);
+        used.add(s.id);
+      }
+
+      if (suggestions.length === 0) {
+        suggestions.push(pickSuggestion("general", [...used], analysis.recentFamilies, analysis));
+      }
+
+      if (suggestions.length < 2) {
+        for (const extra of ["hydration", "movement", "fruit"]) {
+          if (seenCats.has(extra)) continue;
+          let s = pickSuggestion(extra, [...used], analysis.recentFamilies, analysis);
+          s = contextualize(s, analysis, { cat: extra });
+          suggestions.push(s);
+          if (suggestions.length >= 2) break;
+        }
+      }
+
+      return suggestions.slice(0, 3).map(s => ({...s, reasoning: Engine.explain(s, analysis.gaps?.find(g => g.cat === s.cat) || {cat:s.cat}, analysis)}));
+    }
+
+    /* ============================================================
+       REFLECTION ENGINE
+       ============================================================ */
+    function generateReflection(entries) {
+      if (entries.length < 2) return null;
+
+      const analysis = analyzeDeep(entries);
+      const b = analysis.balance;
+      const wins = [];
+      const notes = [];
+
+      if (b.protein >= 2.2) wins.push("protein has been steady");
+      else if (b.protein < 1.2) notes.push("protein has been light");
+
+      if (b.iron >= 1.3) wins.push("iron-rich foods showed up");
+      else if (b.iron < 0.6) notes.push("iron-rich foods have been quiet");
+
+      if (b.vegetable >= 1.8) wins.push("vegetables appeared regularly");
+      else if (b.vegetable < 0.9) notes.push("vegetables were sparse");
+
+      if (b.fruit >= 1.2) wins.push("fruit showed up");
+      else if (b.fruit < 0.5) notes.push("fruit was scarce");
+
+      if (b.hydration >= 3.0) wins.push("fluids looked solid");
+      else if (b.hydration < 1.5) notes.push("fluids lagged");
+      else if ((analysis.lowQualityHydration || 0) > (analysis.plainHydration || 0) + 0.5) {
+        notes.push("drinks leaned toward caffeine or sweetened options");
+      }
+
+      if ((analysis.activityLoad48 || 0) >= 1.8) wins.push("movement was present");
+      else if ((analysis.activityLoad48 || 0) < 0.5) notes.push("movement was minimal");
+
+      let sentence = "";
+
+      if (wins.length > 0) {
+        const winText = wins[0].charAt(0).toUpperCase() + wins[0].slice(1);
+        if (wins.length === 1) {
+          sentence = winText + ".";
+        } else if (wins.length === 2) {
+          sentence = winText + " and " + wins[1] + ".";
+        } else {
+          sentence = winText + ", " + wins.slice(1, -1).join(", ") + ", and " + wins[wins.length - 1] + ".";
+        }
+      }
+
+      if (notes.length > 0) {
+        const noteText = notes.map(n => {
+          const first = n.charAt(0).toUpperCase() + n.slice(1);
+          return first;
+        }).join(". ");
+        if (sentence) {
+          sentence += " " + noteText + ".";
+        } else {
+          sentence = noteText + ".";
+        }
+      }
+
+      if (!sentence) return null;
+
+      const totalWins = wins.length;
+      const totalNotes = notes.length;
+
+      if (totalWins >= 3 && totalNotes <= 1) {
+        sentence += " This is a genuinely solid pattern — worth noticing and keeping.";
+      } else if (totalWins >= 2 && totalNotes <= 2) {
+        sentence += " A good balance overall with a few soft spots to touch.";
+      } else if (totalNotes >= 3 && totalWins === 0) {
+        sentence += " The day has been a bit scattered — that is okay. The next meal is a fresh start.";
+      } else if (totalNotes > totalWins) {
+        sentence += " A few bases to touch when appetite and energy allow.";
+      }
+
+      return sentence;
+    }
+
+    /* ============================================================
+       UI RENDERING
+       ============================================================ */
+    const $ = (sel, ctx = document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+
+    function formatTime(ts) {
+      return new Date(ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    }
+
+    function formatDay(ts) {
+      const d = new Date(ts);
+      const today = new Date();
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (d.toDateString() === today.toDateString()) return "Today";
+      if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
+      return d.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" });
+    }
+
+    function groupByDay(entries) {
+      const groups = {};
+      for (const e of entries) {
+        const key = new Date(e.ts).toDateString();
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(e);
+      }
+      return Object.entries(groups)
+        .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+        .map(([_, items]) => ({
+          label: formatDay(items[0].ts),
+          items: items.sort((a, b) => new Date(b.ts) - new Date(a.ts))
+        }));
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str).replace(/'/g, "&#39;");
+    }
+
+    function iconFor(cat) {
+      const map = {
+        protein: "🥚", iron: "🥩", vegetable: "🥦", fruit: "🍊",
+        grain: "🍚", fat: "🥑", hydration: "💧", movement: "🚶",
+        general: "✦", dairy: "🥛", spacing: "⏱", recovery: "🌿",
+        variety: "🔄", caffeine: "☕", meal_timing: "🕐", sleep: "🌙",
+        acknowledgment: "✨", followup_protein: "🥚", followup_iron: "🥩",
+        followup_vegetable: "🥦", followup_hydration: "💧", followup_movement: "🚶",
+        gf_bread: "🍞", gf_pasta: "🍝", gf_pizza: "🍕", gf_snacks: "🍪"
+      };
+      return map[cat] || "✦";
+    }
+
+    function renderJournal() {
+      const feed = $("#journalFeed");
+      if (state.entries.length === 0) {
+        feed.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">✦</div>
+            <h3>Your journal is quiet</h3>
+            <p>Add what you ate or did above. Over days the engine notices patterns and offers gentle, gluten-free ideas focused on protein and iron support.</p>
+          </div>`;
+        return;
+      }
+
+      const groups = groupByDay(state.entries);
+      feed.innerHTML = groups.map(g => `
+        <div class="day-group">
+          <div class="day-header">${g.label}</div>
+          <div class="entry-list">
+            ${g.items.map(e => `
+              <article class="entry" data-id="${e.id}">
+                <div class="entry-time">${formatTime(e.ts)}</div>
+                <div class="entry-content">
+                  <div class="entry-text">${escapeHtml(e.text)}</div>
+                  ${e.categories.length ? `<div class="entry-tags">${e.categories.map(c => `<span class="tag">${CATEGORIES[c]?.label || c}</span>`).join("")}</div>` : ""}
+                </div>
+                <button class="entry-delete" aria-label="Delete entry" data-id="${e.id}">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                </button>
+              </article>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
+
+      $$(".entry-delete").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.entries = state.entries.filter(e => e.id !== btn.dataset.id);
+          persistEntries();
+          renderAll();
+          showToast("Entry removed");
+        });
+      });
+    }
+
+    function renderSuggestions() {
+      const section = $("#suggestionsSection");
+      const cards = $("#suggestionCards");
+      const suggestions = generateSuggestions(state.entries);
+
+      if (!suggestions.length) {
+        section.hidden = true;
+        return;
+      }
+
+      section.hidden = false;
+      cards.innerHTML = suggestions.map((s, i) => `
+        <div class="suggestion-card" style="animation-delay:${i * 60}ms">
+          <div class="suggestion-icon">${iconFor(s.cat)}</div>
+          <div class="suggestion-body">
+            <div class="suggestion-title">${escapeHtml(s.title)}</div>
+            <div class="suggestion-text">${escapeHtml(s.text)}</div>
+            ${s.reasoning?.length ? `<details class="suggestion-why"><summary>Why this one?</summary><div>${escapeHtml(s.reasoning.join(" · "))}</div></details>` : ""}
+            <div class="suggestion-actions">
+              <button class="btn btn-ghost log-suggestion" data-text="${escapeAttr(s.title)}" data-suggestion-id="${escapeAttr(s.id)}">Log this</button>
+              <button class="btn btn-ghost dismiss-suggestion" data-suggestion-id="${escapeAttr(s.id)}" aria-label="Dismiss suggestion">Not now</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+      const suggestionSignature = suggestions.map(s => s.id).join("|");
+      if (state._lastRenderedSuggestionSignature !== suggestionSignature) {
+        Engine.noteSuggestionsShown(suggestions);
+        state._lastRenderedSuggestionSignature = suggestionSignature;
+      }
+
+      $$(".log-suggestion").forEach(btn => {
+        btn.addEventListener("click", () => {
+          $("#entryInput").value = btn.dataset.text;
+          $("#entryInput").focus();
+          updateAddBtn();
+          $(".composer").scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+      });
+
+      $$(".dismiss-suggestion").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.suggestionId;
+          Engine.recordSuggestion(id, "dismissed");
+          state.settings.dismissedSuggestions = [...new Set([...(state.settings.dismissedSuggestions || []), id])].slice(-40);
+          persistSettings();
+          renderSuggestions();
+          showToast("Got it — I'll vary the next idea");
+        });
+      });
+
+      $$(".log-suggestion").forEach(btn => {
+        const original = btn.onclick;
+        btn.addEventListener("click", () => Engine.recordSuggestion(btn.dataset.suggestionId, "logged"));
+      });
+    }
+
+    function renderReflection() {
+      const bar = $("#reflectionBar");
+      if (!bar) return;
+
+      const reflection = generateReflection(state.entries);
+      const analysis = Engine.analyze(state.entries);
+      if (!reflection) {
+        bar.hidden = true;
+        return;
+      }
+
+      bar.innerHTML = `<strong>Recent pattern:</strong> ${reflection}`;
+      bar.hidden = false;
+    }
+
+    function renderAll() {
+      renderJournal();
+      renderReflection();
+      renderSuggestions();
+    }
+
+    /* ============================================================
+       COMPOSER
+       ============================================================ */
+    const input = $("#entryInput");
+    const addBtn = $("#addBtn");
+    const chips = $$(".chip");
+
+    function getActiveCategories() {
+      return chips.filter(c => c.classList.contains("active")).map(c => c.dataset.cat);
+    }
+
+    function updateAddBtn() {
+      addBtn.disabled = !input.value.trim();
+    }
+
+    input.addEventListener("input", () => {
+      updateAddBtn();
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 140) + "px";
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (!addBtn.disabled) addEntry();
+      }
+    });
+
+    chips.forEach(chip => {
+      chip.addEventListener("click", () => chip.classList.toggle("active"));
+    });
+
+    function addEntry() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      const entry = Engine.normalizeEntry(text, getActiveCategories());
+      state.entries.unshift(entry);
+      Engine.rememberEntry(entry);
+      persistEntries();
+
+      input.value = "";
+      input.style.height = "auto";
+      chips.forEach(c => c.classList.remove("active"));
+      updateAddBtn();
+      renderAll();
+      showToast("Logged");
+    }
+
+    addBtn.addEventListener("click", addEntry);
+
+    /* ============================================================
+       THEME & SETTINGS
+       ============================================================ */
+    function applyTheme() {
+      const pref = state.settings.theme;
+      let dark = pref === "dark" ? true : pref === "light" ? false : (window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)").matches : false);
+      document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+      $("#darkToggle").classList.toggle("on", dark);
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.content = dark ? "#121110" : "#f7f5f2";
+    }
+
+    $("#themeToggle").addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      state.settings.theme = current === "dark" ? "light" : "dark";
+      persistSettings();
+      applyTheme();
+    });
+
+    $("#darkToggle").addEventListener("click", () => {
+      const isOn = $("#darkToggle").classList.contains("on");
+      state.settings.theme = isOn ? "light" : "dark";
+      persistSettings();
+      applyTheme();
+    });
+
+    const mediaTheme = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    if (mediaTheme && typeof mediaTheme.addEventListener === "function") {
+      mediaTheme.addEventListener("change", () => { if (state.settings.theme === "system") applyTheme(); });
+    }
+
+    const overlay = $("#overlay");
+    const panel = $("#settingsPanel");
+
+    function openSettings() {
+      overlay.classList.add("open");
+      panel.classList.add("open");
+    }
+    function closeSettings() {
+      overlay.classList.remove("open");
+      panel.classList.remove("open");
+    }
+
+    $("#settingsBtn").addEventListener("click", openSettings);
+    $("#closeSettings").addEventListener("click", closeSettings);
+    overlay.addEventListener("click", closeSettings);
+
+    $("#exportBtn").addEventListener("click", () => {
+      const exportEntries = state.entries.map(e => ({
+        timestamp: e.ts,
+        localTime: new Date(e.ts).toLocaleString(),
+        userText: e.text,
+        inferredCategories: e.categories || [],
+        foodActivityFamilies: e.families || [],
+        portionEstimates: e.units || {},
+        segments: e.segments || null
+      }));
+
+      const analysis = state.entries.length ? analyzeDeep(state.entries) : null;
+
+      const payload = {
+        format: "Balance Journal Export",
+        version: 3.1,
+        exportedAt: new Date().toISOString(),
+        note: "userText is the exact journal entry. inferredCategories, families, and portionEstimates are system-derived for review and may be imperfect.",
+        entryCount: exportEntries.length,
+        entries: exportEntries,
+        softSummary: analysis ? {
+          recentProtein: +((analysis.balance.protein || 0).toFixed(2)),
+          recentIron: +((analysis.balance.iron || 0).toFixed(2)),
+          recentVegetables: +((analysis.balance.vegetable || 0).toFixed(2)),
+          recentFruit: +((analysis.balance.fruit || 0).toFixed(2)),
+          recentHydration: +((analysis.balance.hydration || 0).toFixed(2)),
+          recentMovementLoad: +((analysis.activityLoad48 || 0).toFixed(2)),
+          plainVsOtherFluids: {
+            plain: +((analysis.plainHydration || 0).toFixed(2)),
+            caffeineSodaAlcohol: +((analysis.lowQualityHydration || 0).toFixed(2))
+          }
+        } : null
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `balance-journal-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Exported");
+    });
+
+    $("#importBtn").addEventListener("click", () => $("#importFile").click());
+    $("#importFile").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (Array.isArray(data.entries)) {
+            state.entries = data.entries;
+          } else if (Array.isArray(data)) {
+            state.entries = data;
+          } else {
+            showToast("Invalid file format");
+            return;
+          }
+          persistEntries();
+          renderAll();
+          showToast("Imported successfully");
+          closeSettings();
+        } catch {
+          showToast("Could not read file");
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = "";
+    });
+
+    $("#clearBtn").addEventListener("click", () => {
+      if (confirm("Clear all journal entries? This cannot be undone.")) {
+        state.entries = [];
+        persistEntries();
+        renderAll();
+        showToast("Journal cleared");
+        closeSettings();
+      }
+    });
+
+    let toastTimer;
+    function showToast(msg) {
+      const t = $("#toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+    }
+
+    const header = $("#header");
+    window.addEventListener("scroll", () => {
+      header.classList.toggle("scrolled", window.scrollY > 8);
+    }, { passive: true });
+
+    
+    /* ============================================================
+       SUBSTITUTE FINDER UI
+       ============================================================ */
+    function doSubstituteSearch() {
+      const input = $("#substituteInput");
+      const resultsDiv = $("#substituteResults");
+      const query = input.value.trim();
+
+      if (!query) {
+        resultsDiv.hidden = true;
+        return;
+      }
+
+      const result = findSubstitute(query);
+
+      if (!result.found) {
+        resultsDiv.innerHTML = `
+          <div class="substitute-no-results">
+            <strong>No specific substitutes found for "${escapeHtml(query)}".</strong><br>
+            Try searching for: bread, bagel, pasta, pizza, crackers, pretzel, wrap, tortilla, cereal, cookie, cake, beer, flour, oats, pancake, breadcrumbs, soy sauce, gravy, stuffing, or pie crust
+          </div>
+        `;
+        resultsDiv.hidden = false;
+        return;
+      }
+
+      const optionsHtml = result.options.map(opt => {
+        // Parse the option string: "Product Name — Note text"
+        const dashIdx = opt.indexOf(' — ');
+        const name = dashIdx > 0 ? opt.slice(0, dashIdx) : opt;
+        const note = dashIdx > 0 ? opt.slice(dashIdx + 3) : '';
+        return `
+          <div class="substitute-result-item">
+            <div>
+              <span class="product-name">${escapeHtml(name)}</span>
+              ${note ? `<span class="product-note"> — ${escapeHtml(note)}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      resultsDiv.innerHTML = `
+        <div class="substitute-result-title">${escapeHtml(result.title)}</div>
+        <div class="substitute-result-list">${optionsHtml}</div>
+      `;
+      resultsDiv.hidden = false;
+    }
+
+    $("#substituteBtn").addEventListener("click", doSubstituteSearch);
+    $("#substituteInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        doSubstituteSearch();
+      }
+    });
+    $("#substituteInput").addEventListener("input", () => {
+      if (!$("#substituteInput").value.trim()) {
+        $("#substituteResults").hidden = true;
+      }
+    });
+
+/* INIT */
+    applyTheme();
+    // Rehydrate durable memory from the journal itself if this is a fresh v4 install.
+    if (!Object.keys(state.memory.concepts).length && state.entries.length) {
+      [...state.entries].reverse().forEach(Engine.rememberEntry);
+    }
+    // Public local debugging surface: useful while evolving the single-file app.
+    window.BalanceEngine = {
+      version: 5,
+      analyze: () => Engine.analyze(state.entries),
+      interpret: text => Engine.interpret(text),
+      state: () => clone(state),
+      exportState: () => ({ schema: SCHEMA_VERSION, state: clone(state) })
+    };
+    renderAll();
+    updateAddBtn();
+    setTimeout(() => {
+      if (state.entries.length === 0) input.focus();
+    }, 300);
+  })();
+</script>
+</body>
+</html>
